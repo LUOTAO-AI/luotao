@@ -3,7 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>职途 · 求职工作台</title>
+<meta name="author" content="职途工作台（笔名 ZT-2026）">
+<meta name="copyright" content="© 2026 职途工作台（笔名 ZT-2026）. All rights reserved.">
+<meta name="robots" content="noindex, nofollow">
+<!-- 本页面为 职途工作台（笔名 ZT-2026） 的原创作品，著作权归作者所有。构建指纹 sha256:ba70877de8a8c93b（2026-11-22）。
+     未经作者书面许可，不得复制、修改、转售或以任何形式二次分发。 -->
+
+<title>职途 · 求职工作台（演示版）</title>
 <meta name="description" content="食品研发方向的求职工作台：岗位、简历、投递、面试、Offer 一站管完，数据只存在你自己的浏览器里。">
 <style>
 /* 职途 · 求职工作台 —— 单文件样式表 */
@@ -45,6 +51,17 @@ h1,h2,h3,h4{margin:0;font-weight:600}
 .pro{margin:8px;padding:12px;border:1px solid var(--line);border-radius:10px;background:#fbfcfe}
 .pro b{font-size:12.5px;display:block}
 .pro p{margin:4px 0 8px;font-size:11.5px;color:var(--faint);line-height:1.5}
+.legal{padding:0 14px 14px;font-size:10.5px;line-height:1.6;color:#a9b0ba}
+.legal b{color:#86909c;font-weight:600}
+/* 可见水印：截图/录屏都会带上，pointer-events 不挡操作 */
+.wm{
+  position:fixed;right:14px;bottom:12px;z-index:40;pointer-events:none;
+  font-size:11px;line-height:1.4;color:#4e5969;background:rgba(255,255,255,.72);
+  border:1px solid rgba(229,230,235,.9);border-radius:14px;padding:3px 10px;
+  backdrop-filter:blur(3px);opacity:.78;letter-spacing:.2px;
+  text-shadow:0 1px 0 rgba(255,255,255,.8);
+}
+@media (max-width:880px){ .wm{right:10px;bottom:10px;font-size:10px;padding:2px 8px;opacity:.72} }
 .main{flex:1;min-width:0;display:flex;flex-direction:column}
 .topbar{
   height:var(--topbar);flex:0 0 var(--topbar);background:var(--panel);border-bottom:1px solid var(--line);
@@ -209,6 +226,7 @@ tr:hover td{background:#fcfdff}
       <p>本地规则引擎，覆盖 JD 分析、模拟面试、Offer 对比。</p>
       <button class="btn primary sm" style="width:100%;justify-content:center" data-act="ai-ask" data-q="分析一下我手上匹配度最高的岗位">立即对话</button>
     </div>
+    <div class="legal"><b>© 2026 职途工作台（笔名 ZT-2026）</b><br>保留所有权利 · 未经授权不得复制、转售、二次分发<br>v1.0 · 构建 2026-11-22 · 指纹 ba70877de8a8c93b</div>
   </aside>
   <div class="main">
     <header class="topbar">
@@ -216,9 +234,9 @@ tr:hover td{background:#fcfdff}
       <div class="search"><span style="opacity:.6">🔍</span><input id="globalSearch" placeholder="搜索岗位 / 公司 / 投递记录..." aria-label="全站搜索"></div>
       <div class="right">
         <button class="icon-btn" data-act="notify" title="通知">🔔<span class="badge-dot"></span></button>
-        <div class="avatar">罗</div>
-        <span class="who">罗涛 · 食品科学与工程</span>
-        <button class="icon-btn" data-act="reset-data" title="恢复初始数据">↺</button>
+        <div class="avatar">示</div>
+        <span class="chip warn" style="margin-right:4px">演示版 · 示例数据</span><span class="who">示例用户 · 食品科学与工程</span>
+        <button class="icon-btn" data-act="reset-data" title="恢复示例数据">↺</button>
       </div>
     </header>
     <main class="content" id="view"></main>
@@ -226,82 +244,84 @@ tr:hover td{background:#fcfdff}
 </div>
 <div class="mask" id="mask"><div class="modal" id="modal"></div></div>
 <div class="toast" id="toast"></div>
+<div class="wm">© LUOTAO · 职途（演示版）v1.0</div>
 <script>
-/* 职途 · 初始数据（食品研发方向 · 罗涛画像）
-   说明：岗位与项目经历来自公开岗位页与本人真实经历；标 [示例] 的条目为演示用占位，可在应用内删除。 */
+/* 职途 · 示例数据（演示版专用）
+   本文件用于对外分享的演示版：不含任何真实姓名、学校、公司、实习经历与个人记录。
+   所有条目均为占位示例，使用者在页面里直接改写即可。 */
 window.SEED = {
   profile: {
-    name: "罗涛",
-    school: "韩山师范学院",
+    name: "示例用户",
+    school: "示例大学",
     major: "食品科学与工程",
-    grade: "2023.09–2027.06 · 本科在读",
-    rank: "专业排名前 4%（综测，120 人）",
-    english: "CET-6 487",
+    grade: "2023.09–2027.06 · 本科在读（示例）",
+    rank: "专业排名前 10%（示例）",
+    english: "CET-6（示例）",
     target: "食品研发 / 研发助理",
-    cities: "广州、深圳、佛山、东莞",
+    cities: "广州、深圳、佛山（示例）",
     salary: "不限",
-    skills: ["小试/中试流程", "配方梯度设计", "感官评价", "TMS-PRO 质构仪", "X-Rite MetaVue 色差仪", "卤素水分仪", "水分活度仪 Aw", "Excel 透视表", "HACCP 巡检"]
+    skills: ["小试/中试流程（示例）", "配方梯度设计（示例）", "感官评价（示例）", "质构仪（示例）", "色差仪（示例）", "水分活度仪（示例）", "Excel 透视表（示例）", "HACCP 巡检（示例）"]
   },
   jobs: [
-    { id: "j1", title: "研发助理（烘焙食品方向）", company: "锦华食品（广州）集团有限公司", city: "广州 · 花都炭步", salary: "4K-6K", type: "全职", match: 92, deadline: "12 天", stage: "已投递", favorite: true, url: "https://www.izhanchi.com/position-detail/100441640", note: "JD 核心是打样、记录小试样工艺比例、留样评测，接受应届；薪资偏低、通勤远。" },
-    { id: "j2", title: "产品开发岗", company: "深圳市晨光乳业有限公司", city: "深圳 · 光明", salary: "6K-12K", type: "全职", match: 88, deadline: "9 天", stage: "已投递", favorite: false, url: "http://jy.ncu.edu.cn/detail/job?id=3264542", note: "跟进小试到量产全流程、Excel 数据整理；含包材管理与文职，配方权重低。" },
-    { id: "j3", title: "饮料研发助理（华南研发中心 · 2027 校招）", company: "佳味天成（佛山）食品科技有限公司", city: "佛山 · 顺德", salary: "实习 4000/月", type: "实习", match: 86, deadline: "5 天", stage: "面试中", favorite: true, url: "https://xjh.niuqizp.com/xjhview-7YrYCntML.html", note: "宣讲会在江南大学（无锡），需微信预约；12 月到岗实习。" },
-    { id: "j4", title: "研发技术员", company: "深圳市金多多食品有限公司", city: "深圳 · 福田", salary: "5K-6K", type: "全职", match: 78, deadline: "14 天", stage: "待投递", favorite: false, url: "https://career.wyu.edu.cn/detail/job?id=2687918", note: "发布于 2026-03-10，距今约 8 个月，需先确认是否仍在招。" },
-    { id: "j5", title: "饮料研发助理", company: "东莞劲宝食品有限公司", city: "东莞 · 横沥", salary: "4-6K", type: "全职", match: 76, deadline: "20 天", stage: "待投递", favorite: false, url: "http://campus.jobcn.com/position/detail.xhtml?comId=656959&posId=4405191", note: "大专起；要求现居东莞；现调饮品经验优先。" },
-    { id: "j6", title: "食品研发助理", company: "广东江大和风香精香料有限公司", city: "广州 · 从化", salary: "6000-8000", type: "全职", match: 72, deadline: "30 天", stage: "待投递", favorite: false, url: "https://food.nwsuaf.edu.cn/zhdt/jyxx/1c9f995d51934dc5ba38d607c2325bc8.htm", note: "公告发布于 2025-04-21，已超一年，投递前须核实。" }
+    { id: "j1", title: "研发助理（烘焙食品方向）", company: "示例食品企业 A", city: "广州 · 示例区", salary: "4K-6K", type: "全职", match: 92, deadline: "12 天", stage: "已投递", favorite: true, url: "", note: "示例：岗位核心是打样、记录小试样工艺比例、留样观察评测；薪资偏低、通勤较远。" },
+    { id: "j2", title: "产品开发岗", company: "示例乳品企业 B", city: "深圳 · 示例区", salary: "6K-12K", type: "全职", match: 88, deadline: "9 天", stage: "已投递", favorite: false, url: "", note: "示例：跟进小试到量产全流程、Excel 数据整理；含包材管理与文职。" },
+    { id: "j3", title: "饮料研发助理（校招）", company: "示例饮料企业 C", city: "佛山 · 示例区", salary: "实习 4000/月", type: "实习", match: 86, deadline: "5 天", stage: "面试中", favorite: true, url: "", note: "示例：需先预约宣讲场次，12 月到岗实习。" },
+    { id: "j4", title: "研发技术员", company: "示例糖果企业 D", city: "深圳 · 示例区", salary: "5K-6K", type: "全职", match: 78, deadline: "14 天", stage: "待投递", favorite: false, url: "", note: "示例：发布时间较早，投递前需确认是否仍在招。" },
+    { id: "j5", title: "饮料研发助理", company: "示例饮品企业 E", city: "东莞 · 示例区", salary: "4-6K", type: "全职", match: 76, deadline: "20 天", stage: "待投递", favorite: false, url: "", note: "示例：大专起；要求现居本地；现调饮品经验优先。" },
+    { id: "j6", title: "食品研发助理", company: "示例香料企业 F", city: "广州 · 示例区", salary: "6000-8000", type: "全职", match: 72, deadline: "30 天", stage: "待投递", favorite: false, url: "", note: "示例：公告发布时间较早，需先核实。" }
   ],
   resumes: [
-    { id: "r1", name: "v3.2 食品研发 · 烘焙版", tags: ["全职", "研发助理"], match: 92, status: "使用中", updated: "2026-11-22", focus: "打样与留样评测、配方梯度、质构对标" },
-    { id: "r2", name: "v2.0 研发助理通用版", tags: ["全职", "研发助理"], match: 88, status: "待优化", updated: "2026-11-18", focus: "小试记录、数据汇总、法规基础" },
-    { id: "r3", name: "v1.5 质量管理版", tags: ["全职", "品控"], match: 76, status: "待完善", updated: "2026-10-30", focus: "HACCP 巡检、异常上报、批次跟样" }
+    { id: "r1", name: "v3.2 烘焙研发版（示例）", tags: ["全职", "研发助理"], match: 92, status: "使用中", updated: "2026-11-22", focus: "打样与留样评测、配方梯度、质构对标（示例）" },
+    { id: "r2", name: "v2.0 研发助理通用版（示例）", tags: ["全职", "研发助理"], match: 88, status: "待优化", updated: "2026-11-18", focus: "小试记录、数据汇总、法规基础（示例）" },
+    { id: "r3", name: "v1.5 质量管理版（示例）", tags: ["全职", "品控"], match: 76, status: "待完善", updated: "2026-10-30", focus: "HACCP 巡检、异常上报、批次跟样（示例）" }
   ],
   projects: [
-    { id: "p1", title: "小米糕配方梯度开发（利口福科创研究院）", tags: ["小试 40+", "TMS-PRO", "感官评价"], desc: "设定粳米粉:糯米粉 7:3 / 6:4 / 5:5 三档梯度，独立设计执行小试 40 余次；用 TMS-PRO 测硬度与咀嚼并对标竞品，自研样品硬度较竞品低 23%；锁定高糯米粉占比软质配比区间。", date: "2026-11" },
-    { id: "p2", title: "保健食品小试到中试（长兴生物产品开发部）", tags: ["配方验证", "中试", "记录 60+"], desc: "参与保健食品新品从配方验证到工艺可行性测试；独立完成小试记录表 60 余张，汇总 20 余批次实验数据；起草配方配比调整建议 5 份，2 条被采纳。", date: "2026-02" },
-    { id: "p3", title: "三条产线 HACCP 制程巡检（金绿集团）", tags: ["HACCP", "异常上报"], desc: "清洗／卤制／真空包装三条产线每 2 小时核查参数，排查上报 4 起参数偏移，未出现批次质量问题；跟进 3 款新品共 11 批次打样。", date: "2025-09" },
-    { id: "p4", title: "省级粤东药食资源重点实验室 助理", tags: ["仪器维护", "物料登记"], desc: "负责仪器维护、物料登记与试剂耗材盘点，保障实验室日常运转。", date: "2025-05" }
+    { id: "p1", title: "示例项目：糕点配方梯度开发", tags: ["小试", "质构", "感官评价"], desc: "示例描述：设定原料配比三档梯度，设计并执行若干轮小试；用质构仪测硬度与咀嚼性并与竞品对比；最终锁定一个软质配比区间。（此处替换为你的真实项目）", date: "2026-11" },
+    { id: "p2", title: "示例项目：新品小试到中试", tags: ["配方验证", "中试", "记录"], desc: "示例描述：参与新品从配方验证到工艺可行性测试；完成小试记录与多批次数据汇总；起草配方调整建议若干份。（此处替换为你的真实项目）", date: "2026-02" },
+    { id: "p3", title: "示例项目：产线 HACCP 巡检", tags: ["HACCP", "异常上报"], desc: "示例描述：按固定周期核查关键工艺参数，记录并上报参数偏移；跟进新品打样批次。（此处替换为你的真实项目）", date: "2025-09" },
+    { id: "p4", title: "示例项目：实验室日常管理", tags: ["仪器维护", "物料登记"], desc: "示例描述：负责仪器维护、物料登记与试剂耗材盘点，保障实验室日常运转。（此处替换为你的真实项目）", date: "2025-05" }
   ],
   applications: [
-    { id: "a1", company: "锦华食品（广州）集团", title: "研发助理（烘焙食品方向）", city: "广州 · 花都", date: "2026-11-21", status: "面试中", steps: ["投递简历", "简历筛选", "HR 面", "技术面"], current: 2, note: "HR 已加微信，技术面安排在下周。" },
-    { id: "a2", company: "深圳市晨光乳业", title: "产品开发岗", city: "深圳 · 光明", date: "2026-11-19", status: "已投递", steps: ["投递简历", "简历筛选", "一面", "二面"], current: 1, note: "官网投递，等待筛选结果。" },
-    { id: "a3", company: "佳味天成（佛山）食品科技", title: "饮料研发助理", city: "佛山 · 顺德", date: "2026-11-17", status: "面试中", steps: ["投递简历", "简历筛选", "初面", "复试"], current: 2, note: "已微信预约登记，等待场次确认。" }
+    { id: "a1", company: "示例食品企业 A", title: "研发助理（烘焙食品方向）", city: "广州 · 示例区", date: "2026-11-21", status: "面试中", steps: ["投递简历", "简历筛选", "HR 面", "技术面"], current: 2, note: "示例备注：HR 已加微信，技术面安排在下周。" },
+    { id: "a2", company: "示例乳品企业 B", title: "产品开发岗", city: "深圳 · 示例区", date: "2026-11-19", status: "已投递", steps: ["投递简历", "简历筛选", "一面", "二面"], current: 1, note: "示例备注：官网投递，等待筛选结果。" },
+    { id: "a3", company: "示例饮料企业 C", title: "饮料研发助理", city: "佛山 · 示例区", date: "2026-11-17", status: "面试中", steps: ["投递简历", "简历筛选", "初面", "复试"], current: 2, note: "示例备注：已预约登记，等待场次确认。" }
   ],
   interviews: [
-    { id: "i1", company: "锦华食品（广州）集团", title: "研发助理（烘焙食品方向）", round: "技术面", date: "2026-11-26", time: "14:00–15:00", place: "线上面试", score: 0, result: "待进行" },
-    { id: "i2", company: "佳味天成（佛山）食品科技", title: "饮料研发助理", round: "初面", date: "2026-11-24", time: "10:00–11:00", place: "线上（微信）", score: 0, result: "待进行" },
-    { id: "i3", company: "深圳市晨光乳业 [示例]", title: "产品开发岗", round: "统一一面", date: "2026-11-12", time: "15:00–16:00", place: "线上", score: 7, result: "通过" }
+    { id: "i1", company: "示例食品企业 A", title: "研发助理（烘焙食品方向）", round: "技术面", date: "2026-11-26", time: "14:00–15:00", place: "线上面试", score: 0, result: "待进行" },
+    { id: "i2", company: "示例饮料企业 C", title: "饮料研发助理", round: "初面", date: "2026-11-24", time: "10:00–11:00", place: "线上", score: 0, result: "待进行" },
+    { id: "i3", company: "示例乳品企业 B", title: "产品开发岗", round: "统一一面", date: "2026-11-12", time: "15:00–16:00", place: "线上", score: 7, result: "通过" }
   ],
   contacts: [
-    { id: "c1", name: "陈学长 [示例]", company: "锦华食品", role: "研发工程师", date: "2026-11-20", status: "沟通中", followup: "已发简历，等内推反馈" },
-    { id: "c2", name: "学院就业老师 [示例]", company: "韩山师范学院", role: "就业指导", date: "2026-11-15", status: "已回复", followup: "提供了 3 家粤东食品企业名单" }
+    { id: "c1", name: "联系人甲（示例）", company: "示例食品企业 A", role: "研发工程师", date: "2026-11-20", status: "沟通中", followup: "示例：已发简历，等内推反馈" },
+    { id: "c2", name: "联系人乙（示例）", company: "示例大学", role: "就业指导", date: "2026-11-15", status: "已回复", followup: "示例：提供了 3 家本地食品企业名单" }
   ],
   plans: [
-    { id: "l1", name: "GB 2760 / 7718 法规复盘", target: "食品研发 / 品控", weeks: 2, priority: "高", deadline: "2026-11-30", tasks: [ { title: "GB 2760 添加剂使用范围梳理", date: "2026-11-24", done: true }, { title: "GB 7718 标签要素自查清单", date: "2026-11-27", done: true }, { title: "整理 10 个常见违规案例", date: "2026-11-30", done: false } ] },
-    { id: "l2", name: "质构数据与 Excel 透视表", target: "研发助理", weeks: 3, priority: "中", deadline: "2026-12-08", tasks: [ { title: "TPA 曲线参数含义复习", date: "2026-11-25", done: true }, { title: "把 40 次小试数据建成透视表", date: "2026-12-08", done: false } ] }
+    { id: "l1", name: "示例计划：食品安全国家标准复盘", target: "食品研发 / 品控", weeks: 2, priority: "高", deadline: "2026-11-30", tasks: [{ title: "梳理添加剂使用范围（示例）", date: "2026-11-24", done: true }, { title: "整理标签合规自查清单（示例）", date: "2026-11-27", done: true }, { title: "整理常见违规案例（示例）", date: "2026-11-30", done: false }] },
+    { id: "l2", name: "示例计划：质构数据与 Excel", target: "研发助理", weeks: 3, priority: "中", deadline: "2026-12-08", tasks: [{ title: "复习 TPA 曲线参数（示例）", date: "2026-11-25", done: true }, { title: "把实验数据建成透视表（示例）", date: "2026-12-08", done: false }] }
   ],
   diaries: [
-    { id: "d1", date: "2026-11-22", mood: 4, energy: 3, text: "锦华 HR 回复了，技术面排在下周。把小米糕的配比区间又整理了一遍，心里踏实一些。", tags: ["面试", "复盘"] },
-    { id: "d2", date: "2026-11-20", mood: 3, energy: 3, text: "晨光官网投递卡在附件上传，换了浏览器才好。晚上改了一版简历开头。", tags: ["投递"] },
-    { id: "d3", date: "2026-11-18", mood: 4, energy: 4, text: "和学长聊了半小时，知道了研发助理面试更看重能不能下产线。", tags: ["人脉"] }
+    { id: "d1", date: "2026-11-22", mood: 4, energy: 3, text: "示例日记：今天收到一个面试邀约，把项目经历又整理了一遍。", tags: ["面试", "复盘"] },
+    { id: "d2", date: "2026-11-20", mood: 3, energy: 3, text: "示例日记：投递页面卡在上传附件，换了浏览器才好。", tags: ["投递"] },
+    { id: "d3", date: "2026-11-18", mood: 4, energy: 4, text: "示例日记：和学长聊了一会儿，了解到面试更看重能不能下产线。", tags: ["人脉"] }
   ],
   offers: [],
   materials: [
-    { id: "m1", type: "公司分析", title: "锦华食品（广州）研发助理 JD 要点", summary: "打样、记录小试样工艺比例、留样观察评测、协助编写配方资料；本科、可接受应届。", source: "易展翅岗位页", date: "2026-11-22", tags: ["烘焙", "研发助理"] },
-    { id: "m2", type: "公司分析", title: "晨光乳业 2026 校招简章要点", summary: "研发工程师岗要求 985/211 硕士；产品开发岗本科可投、应届或 1 年内，6K-12K。", source: "西北农林科大食品学院就业信息", date: "2026-11-16", tags: ["乳品", "校招"] },
-    { id: "m3", type: "笔试题", title: "食品研发常见笔试题型汇总 [示例]", summary: "配方计算、添加剂限量、标签法规、微生物指标判定、质构指标解释。", source: "自整理", date: "2026-11-10", tags: ["法规", "计算"] },
-    { id: "m4", type: "面经", title: "研发助理面试常问题 [示例]", summary: "为什么选食品研发、讲一次独立小试、产线口感波动怎么排查、如何做降本。", source: "自整理", date: "2026-11-12", tags: ["面试"] }
+    { id: "m1", type: "公司分析", title: "示例资料：某食品企业研发助理 JD 要点", summary: "示例：打样、记录小试样工艺比例、留样观察评测、协助编写配方资料；本科、可接受应届。", source: "示例来源", date: "2026-11-22", tags: ["烘焙", "研发助理"] },
+    { id: "m2", type: "公司分析", title: "示例资料：某乳企校招简章要点", summary: "示例：研发岗要求硕士；产品开发岗本科可投、应届或 1 年内可投。", source: "示例来源", date: "2026-11-16", tags: ["乳品", "校招"] },
+    { id: "m3", type: "笔试题", title: "示例资料：食品研发笔试题型汇总", summary: "示例：配方计算、添加剂限量、标签法规、微生物指标判定、质构指标解释。", source: "自整理", date: "2026-11-10", tags: ["法规", "计算"] },
+    { id: "m4", type: "面经", title: "示例资料：研发助理面试常问题", summary: "示例：为什么选食品研发、讲一次独立小试、产线口感波动怎么排查、如何做降本。", source: "自整理", date: "2026-11-12", tags: ["面试"] }
   ],
   nodes: [
-    { id: "n1", date: "2026-11-24", title: "佳味天成 初面（线上）", tag: "面试" },
-    { id: "n2", date: "2026-11-26", title: "锦华食品 技术面", tag: "面试" },
-    { id: "n3", date: "2026-11-30", title: "GB 2760 复盘截止", tag: "学习" },
-    { id: "n4", date: "2026-12-08", title: "质构数据透视表完成", tag: "学习" }
+    { id: "n1", date: "2026-11-24", title: "示例节点：企业 C 初面（线上）", tag: "面试" },
+    { id: "n2", date: "2026-11-26", title: "示例节点：企业 A 技术面", tag: "面试" },
+    { id: "n3", date: "2026-11-30", title: "示例节点：法规复盘截止", tag: "学习" },
+    { id: "n4", date: "2026-12-08", title: "示例节点：数据透视表完成", tag: "学习" }
   ],
   goals: { monthly: 30, invested: 3 }
 };
 
 /* ============ 职途 · 核心（存储 / 工具 / 图表 / 路由） ============ */
-const DB_KEY = "zhitu.food.v1";
+const DB_KEY = "zhitu.food.demo.v1";
 
 function clone(o) { return JSON.parse(JSON.stringify(o)); }
 function loadDB() {
@@ -569,7 +589,7 @@ VIEWS.jobs = {
         </div></td>
       </tr>`).join("") : `<tr><td colspan="8"><div class="empty">没有符合条件的岗位。换个关键词，或点右上角添加。</div></td></tr>`}
       </tbody></table></div>
-      <div class="note info" style="margin-top:12px">岗位链接来自公开招聘页；标「[示例]」的条目是演示占位。薪资以原页面为准。</div>`;
+      <div class="note info" style="margin-top:12px">岗位条目的「原始链接」若填了公开地址，详情页可直接跳回原招聘页；未填写的按示例数据展示。薪资以原页面为准。</div>`;
   }
 };
 
@@ -692,12 +712,15 @@ const AI_FEATURES = [
 function aiReply(q) {
   const t = q.toLowerCase();
   const top = [...db.jobs].sort((a, b) => b.match - a.match)[0];
+  const p = db.profile || {};
+  const skills = (p.skills || []).slice(0, 6).join("、") || "（技能栏还没填）";
+  const bonus = [p.english, p.rank].filter(Boolean).join("、") || "英语、排名、实验室经历等";
   if (/jd|岗位|分析/.test(t)) {
     if (!top) return "库里还没有岗位。先去「岗位管理」添加一条，我再按五维拆给你看。";
-    return `按你的画像，库里匹配度最高的是「${top.company} · ${top.title}」（${top.match}%）。\n\n拆解：\n· 相关性（30）：岗位要的是打样、配方与留样评测，你的小米糕梯度设计、曲奇饼干小试直接对得上。\n· 小试/中试（25）：40 余次小试 + 中试试产 + 作业指导书 2 份。\n· 仪器（20）：TMS-PRO、色差仪、水分仪、Aw、感官评价齐全。\n· 数据（15）：60 余张记录表、20 余批次汇总、Excel 透视表。\n· 加分（10）：CET-6 487、专业前 4%、实验室助理、HACCP 巡检。\n\n要补的：这份 JD 写「1 年以上经验优先」，应届属放宽侧，投递时用项目时长与产出对冲。`;
+    return `按你的画像，库里匹配度最高的是「${top.company} · ${top.title}」（${top.match}%）。\n\n拆解：\n· 相关性（30）：岗位要求和你填的专业方向、项目方向是否重合，${top.note ? "JD 风险提示里已标出关键要求与缺口" : "需要对着 JD 逐条核"}。\n· 小试/中试（25）：库里现有 ${db.projects.length} 条项目经历，够不够要看是否都带量化结果。\n· 仪器与检测（20）：技能栏里列了 ${skills}。\n· 数据与记录（15）：小试记录、批次汇总、Excel 透视表这类证据要和岗位对得上。\n· 加分（10）：${bonus}。\n\n要补的：把差额写进「学习提升」的计划，别只在简历上堆形容词。`;
   }
-  if (/简历/.test(t)) return `对着目标岗位，简历第一屏建议这样改：\n1. 求职意向写成「食品研发 / 研发助理（烘焙 · 预制菜）」，别写泛泛的「食品相关岗位」。\n2. 技能栏前置 JD 里的词：打样、配方梯度、留样观察、感官评价、质构。\n3. 项目经历每条按「配方变量 → 做几轮 → 量化结果」写，例如粳米粉:糯米粉 7:3/6:4/5:5、小试 40 余次、硬度较竞品低 23%。\n4. 删掉「熟悉办公软件」这类零信息量句子。`;
-  if (/面试|模拟/.test(t)) return `研发助理面试，先准备这 3 个：\n1. 「讲一次你独立完成的小试」——按变量、轮次、检测指标、结论四段说，落到 40 余次与 23% 这个数。\n2. 「产线出现口感波动怎么排查」——从原料批次、配比、关键工艺参数、检测数据四条线拆。\n3. 「你了解 GB 2760 吗」——说出你实际用过的类别与限量，别背目录。\n\n回答时多用「我做过 X，结果是 Y」，少用「我了解 / 我熟悉」。`;
+  if (/简历/.test(t)) return `对着目标岗位，简历第一屏建议这样改：\n1. 求职意向写具体方向（如「食品研发 / 研发助理」），别写泛泛的「食品相关岗位」。\n2. 技能栏前置 JD 里的原词，让机器筛和人都能一眼看到。\n3. 项目经历按「变量 → 轮次 → 量化结果」写，每条只讲一件事。\n4. 删掉「熟悉办公软件」这类零信息量句子。`;
+  if (/面试|模拟/.test(t)) return `研发助理面试，先准备这 3 个：\n1. 「讲一次你独立完成的小试」——按变量、轮次、检测指标、结论四段说，结尾落到一个具体数字。\n2. 「产线出现口感波动怎么排查」——从原料批次、配比、关键工艺参数、检测数据四条线拆。\n3. 「你了解 GB 2760 吗」——说出你实际用过的类别与限量，别背目录。\n\n回答时多用「我做过 X，结果是 Y」，少用「我了解 / 我熟悉」。`;
   if (/复盘/.test(t)) {
     const done = db.interviews.filter((i) => i.score);
     if (!done.length) return "还没有打分的面试记录。去「面试中心」给每场打分，我再按分数给改进项。";
@@ -709,7 +732,7 @@ function aiReply(q) {
   }
   if (/薪|谈/.test(t)) {
     const ranges = db.jobs.map((j) => j.salary).filter((s) => /\d/.test(s)).slice(0, 3);
-    return `广东食品研发助理这一档，公开岗位大多在 ${ranges.join(" / ") || "4-8K"}。\n谈的时候：\n1. 先报区间不报单点：「期望 9-11K，主要看岗位匹配度」。\n2. 用可验证的产出支撑：小试 40 余次、试产异常对照 6 项、作业指导书 2 份。\n3. 问清转正与调薪节奏，应届第一份更该看成长与产线接触面。`;
+    return `这一档岗位的公开薪资大致是 ${ranges.join(" / ") || "4-8K"}。\n谈的时候：\n1. 先报区间不报单点：「期望 9-11K，主要看岗位匹配度」。\n2. 用可验证的产出支撑：项目条数、检测指标、落地批次，别用「学习能力强」。\n3. 问清转正与调薪节奏，第一份工作更该看成长与产线接触面。`;
   }
   return "我可以帮你做：JD 分析、简历优化、模拟面试、面试复盘、Offer 对比、薪资谈判。点下面的快捷问题，或直接说你的情况。\n（说明：这是本地规则回复，没有连接大模型，也不会把你的数据发出去。）";
 }
@@ -985,7 +1008,8 @@ function download(name, text, mime) {
   setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 400);
 }
 function exportMD() {
-  const lines = ["# 罗涛 · 求职工作台导出（" + TODAY.toISOString().slice(0, 10) + "）", "", "## 岗位清单", "", "| 岗位 | 公司 | 城市 | 薪资 | 匹配度 | 阶段 | 来源 |", "|---|---|---|---|---|---|---|"];
+  const who = (db.profile && db.profile.name) || "我";
+  const lines = ["# " + who + " · 求职工作台导出（" + TODAY.toISOString().slice(0, 10) + "）", "", "## 岗位清单", "", "| 岗位 | 公司 | 城市 | 薪资 | 匹配度 | 阶段 | 来源 |", "|---|---|---|---|---|---|---|"];
   db.jobs.forEach((j) => lines.push(`| ${j.title} | ${j.company} | ${j.city} | ${j.salary} | ${j.match}% | ${j.stage} | ${j.url} |`));
   lines.push("", "## 投递记录", "");
   db.applications.forEach((a) => lines.push(`- ${a.company} · ${a.title}｜${a.date}｜当前：${a.steps[a.current]}${a.note ? "｜备注：" + a.note : ""}`));
@@ -1232,7 +1256,7 @@ document.addEventListener("click", (e) => {
           <div><label>匹配度</label><div class="bar"><i style="width:${j.match}%"></i></div><div class="muted" style="margin-top:4px">${j.match}%</div></div>
           <div><label>当前阶段</label><div>${stageChip(j.stage)}</div></div>
           <div><label>风险 / 备注</label><div class="muted">${esc(j.note || "—")}</div></div>
-          <div><label>原始链接</label><a href="${esc(j.url)}" target="_blank" rel="noopener">${esc(j.url)}</a></div>
+          <div><label>原始链接</label><div>${j.url && j.url.startsWith("http") ? `<a href="${esc(j.url)}" target="_blank" rel="noopener">${esc(j.url)}</a>` : '<span class="muted">示例数据，无外部链接</span>'}</div></div>
         </div>
         <div class="foot"><button class="btn" data-act="modal-close">关闭</button></div>`;
       $("#mask").classList.add("on");
@@ -1327,7 +1351,11 @@ document.addEventListener("click", (e) => {
       break;
     case "reset-do":
       localStorage.removeItem(DB_KEY); db = clone(window.SEED); save(); closeModal(); go("dashboard"); toast("已恢复初始数据"); break;
-    case "notify": toast("2 条提醒：11-24 佳味天成初面、11-26 锦华技术面"); break;
+    case "notify": {
+      const up = db.interviews.filter((i) => i.result === "待进行").slice(0, 3);
+      toast(up.length ? up.length + " 条提醒：" + up.map((i) => i.date.slice(5) + " " + i.company + " " + i.round).join("、") : "近期没有待进行的面试");
+      break;
+    }
   }
 });
 
@@ -1367,6 +1395,21 @@ function boot() {
 }
 boot();
 
+</script>
+<script>
+(function () {
+  // 禁止被其他站点通过 iframe 套壳展示
+  try {
+    if (window.top !== window.self) { window.top.location = window.self.location; }
+  } catch (e) {
+    document.documentElement.innerHTML = '<p style="font:14px sans-serif;padding:40px">本页面不允许被嵌入其他站点展示。</p>';
+  }
+  var style = 'font-weight:600;color:#1f5fbf';
+  console.log('%c职途 · 求职工作台 v1.0', style);
+  console.log('%c© 2026 职途工作台（笔名 ZT-2026） · 保留所有权利 · 构建指纹 sha256:ba70877de8a8c93b',
+    'color:#4e5969');
+  console.log('未经作者书面许可，不得复制、转售或二次分发本作品的代码与界面设计。');
+})();
 </script>
 </body>
 </html>
