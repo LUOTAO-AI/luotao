@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>职途 · 求职工作台</title>
+<meta name="description" content="食品研发方向的求职工作台：岗位、简历、投递、面试、Offer 一站管完，数据只存在你自己的浏览器里。">
+<style>
+/* 职途 · 求职工作台 —— 单文件样式表 */
+:root{
+  --bg:#f5f6f8; --panel:#fff; --ink:#1d2129; --sub:#4e5969; --faint:#86909c;
+  --line:#e5e6eb; --line-2:#f0f1f3; --brand:#1f5fbf; --brand-soft:#eaf1fc;
+  --ok:#0e7a4f; --ok-soft:#e8f6ef; --warn:#8a5a00; --warn-soft:#fff6e5;
+  --bad:#a4222f; --bad-soft:#fdecee; --radius:10px;
+  --sidebar:224px; --topbar:56px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font:14px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--brand);text-decoration:none}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3,h4{margin:0;font-weight:600}
+/* ---------- 框架 ---------- */
+.app{display:flex;min-height:100vh}
+.sidebar{
+  width:var(--sidebar);flex:0 0 var(--sidebar);background:var(--panel);
+  border-right:1px solid var(--line);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;
+}
+.brand{padding:16px 18px 12px;border-bottom:1px solid var(--line-2)}
+.brand b{font-size:17px;letter-spacing:.5px}
+.brand span{display:block;font-size:11.5px;color:var(--faint);margin-top:2px}
+.nav{flex:1;overflow-y:auto;padding:8px}
+.nav a{
+  display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:8px;
+  color:var(--sub);font-size:13.5px;margin-bottom:2px;
+}
+.nav a:hover{background:var(--line-2)}
+.nav a.on{background:var(--brand-soft);color:var(--brand);font-weight:600}
+.nav a .ic{width:16px;text-align:center;font-size:13px;opacity:.8}
+.nav a .dot{margin-left:auto;background:#f53f3f;color:#fff;font-size:10.5px;border-radius:9px;padding:0 6px;line-height:16px}
+.pro{margin:8px;padding:12px;border:1px solid var(--line);border-radius:10px;background:#fbfcfe}
+.pro b{font-size:12.5px;display:block}
+.pro p{margin:4px 0 8px;font-size:11.5px;color:var(--faint);line-height:1.5}
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{
+  height:var(--topbar);flex:0 0 var(--topbar);background:var(--panel);border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:14px;padding:0 20px;position:sticky;top:0;z-index:20;
+}
+.search{
+  flex:1;max-width:420px;display:flex;align-items:center;gap:8px;background:var(--bg);
+  border:1px solid var(--line);border-radius:18px;padding:6px 14px;
+}
+.search input{border:0;background:transparent;outline:none;flex:1;font-size:13px}
+.topbar .right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.icon-btn{width:32px;height:32px;border-radius:8px;border:1px solid var(--line);background:#fff;cursor:pointer;display:grid;place-items:center;position:relative}
+.icon-btn:hover{background:var(--bg)}
+.badge-dot{position:absolute;top:5px;right:6px;width:6px;height:6px;background:#f53f3f;border-radius:50%}
+.avatar{width:30px;height:30px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:600}
+.who{font-size:12.5px;color:var(--sub)}
+.content{padding:22px 24px 60px;flex:1}
+/* ---------- 页头 ---------- */
+.page-head{display:flex;align-items:flex-start;gap:14px;margin-bottom:18px;flex-wrap:wrap}
+.page-head h1{font-size:20px}
+.page-head p{margin:4px 0 0;color:var(--faint);font-size:12.5px}
+.page-head .ops{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.btn{
+  border:1px solid var(--line);background:#fff;border-radius:8px;padding:7px 13px;font-size:13px;cursor:pointer;
+  display:inline-flex;align-items:center;gap:6px;
+}
+.btn:hover{background:var(--bg)}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn.primary:hover{filter:brightness(1.06)}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--brand)}
+.btn.sm{padding:4px 10px;font-size:12px;border-radius:6px}
+.btn.danger{color:var(--bad);border-color:#f3d2d6}
+/* ---------- 卡片/网格 ---------- */
+.grid{display:grid;gap:14px}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px}
+.card h3{font-size:14px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.card h3 .tag{margin-left:auto;font-size:11.5px;color:var(--faint);font-weight:400}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px}
+.kpi .t{font-size:12.5px;color:var(--faint)}
+.kpi .v{font-size:23px;font-weight:600;line-height:1.35;margin-top:2px}
+.kpi .v small{font-size:12px;font-weight:400;color:var(--faint);margin-left:4px}
+.kpi .d{font-size:11.5px;color:var(--faint);margin-top:2px}
+/* ---------- 表格 ---------- */
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{ text-align:left;font-weight:600;color:var(--sub);background:#fafbfc;padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:11px 12px;border-bottom:1px solid var(--line-2);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+tr:hover td{background:#fcfdff}
+.t-title{font-weight:600}
+.t-sub{font-size:11.5px;color:var(--faint);margin-top:2px}
+.chip{display:inline-block;font-size:11.5px;padding:1px 8px;border-radius:20px;background:var(--line-2);color:var(--sub);margin:2px 4px 2px 0}
+.chip.ok{background:var(--ok-soft);color:var(--ok)}
+.chip.warn{background:var(--warn-soft);color:var(--warn)}
+.chip.bad{background:var(--bad-soft);color:var(--bad)}
+.chip.brand{background:var(--brand-soft);color:var(--brand)}
+.chip.ghost{background:#fff;border:1px solid var(--line)}
+.ops-inline{display:flex;gap:6px;flex-wrap:wrap}
+.iconlink{border:0;background:transparent;cursor:pointer;padding:3px 5px;border-radius:6px;font-size:13px;color:var(--faint)}
+.iconlink:hover{background:var(--line-2);color:var(--brand)}
+/* ---------- 进度/条形 ---------- */
+.bar{height:7px;background:var(--line-2);border-radius:4px;overflow:hidden;min-width:70px}
+.bar i{display:block;height:100%;background:var(--brand);border-radius:4px}
+.bar.ok i{background:var(--ok)}
+.row-between{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.muted{color:var(--faint);font-size:12px}
+.empty{padding:34px 16px;text-align:center;color:var(--faint);font-size:13px;border:1px dashed var(--line);border-radius:var(--radius);background:#fcfdff}
+/* ---------- 时间轴 ---------- */
+.tl{position:relative;padding-left:18px}
+.tl:before{content:"";position:absolute;left:5px;top:4px;bottom:4px;width:2px;background:var(--line-2)}
+.tl-item{position:relative;padding:0 0 16px 4px}
+.tl-item:before{content:"";position:absolute;left:-17px;top:5px;width:9px;height:9px;border-radius:50%;background:#fff;border:2px solid var(--brand)}
+.tl-item.done:before{background:var(--brand)}
+.stage{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:8px}
+.stage .s{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--faint)}
+.stage .s i{width:14px;height:14px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font-size:9px;font-style:normal}
+.stage .s.on{color:var(--ink)}
+.stage .s.on i{background:var(--brand);border-color:var(--brand);color:#fff}
+.stage .sep{width:12px;height:1px;background:var(--line)}
+/* ---------- 图表 ---------- */
+.chart{width:100%;height:auto;display:block}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--sub);margin-top:8px}
+.legend i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:5px}
+.hbars{display:grid;gap:10px}
+.hbar{display:grid;grid-template-columns:96px 1fr 44px;gap:10px;align-items:center;font-size:12.5px}
+.hbar .b{height:8px;background:var(--line-2);border-radius:4px;overflow:hidden}
+.hbar .b i{display:block;height:100%;border-radius:4px;background:var(--brand)}
+/* ---------- 时间轴卡片(投递) ---------- */
+.app-card{border:1px solid var(--line);border-radius:var(--radius);padding:14px;background:#fff;margin-bottom:12px}
+.app-card .head{display:flex;gap:10px;align-items:flex-start}
+.app-card .head .n{font-weight:600}
+.app-card .head .meta{font-size:12px;color:var(--faint);margin-top:2px}
+.app-card .head .right{margin-left:auto;text-align:right;font-size:12px;color:var(--faint);white-space:nowrap}
+/* ---------- 弹窗 ---------- */
+.mask{position:fixed;inset:0;background:rgba(29,33,41,.34);display:none;place-items:center;z-index:60;padding:20px}
+.mask.on{display:grid}
+.modal{background:#fff;border-radius:12px;width:min(560px,100%);max-height:86vh;overflow:auto;padding:20px 22px;box-shadow:0 12px 40px rgba(0,0,0,.16)}
+.modal h3{font-size:16px;margin-bottom:14px}
+.form{display:grid;gap:12px}
+.form label{display:block;font-size:12.5px;color:var(--sub);margin-bottom:5px}
+.form input,.form select,.form textarea{
+  width:100%;border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:#fff;outline:none;font-size:13px;
+}
+.form input:focus,.form select:focus,.form textarea:focus{border-color:var(--brand)}
+.form .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.modal .foot{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+/* ---------- 对话 ---------- */
+.chat{display:grid;gap:10px;max-height:360px;overflow:auto;padding-right:4px}
+.msg{max-width:86%;padding:9px 12px;border-radius:10px;font-size:13px;white-space:pre-wrap;line-height:1.65}
+.msg.me{margin-left:auto;background:var(--brand);color:#fff}
+.msg.ai{background:#f7f8fa;border:1px solid var(--line)}
+.quick{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.feature{border:1px solid var(--line);border-radius:10px;padding:13px;cursor:pointer;background:#fff;text-align:left}
+.feature:hover{border-color:var(--brand);background:#fbfdff}
+.feature b{display:block;font-size:13.5px;margin-bottom:4px}
+.feature span{font-size:12px;color:var(--faint);line-height:1.55;display:block}
+/* ---------- 其它 ---------- */
+.note{font-size:12px;color:var(--warn);background:var(--warn-soft);border-radius:8px;padding:8px 11px;display:flex;gap:8px}
+.note.info{color:var(--sub);background:#f7f8fa}
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(14px);background:#1d2129;color:#fff;font-size:13px;padding:9px 16px;border-radius:8px;opacity:0;pointer-events:none;transition:.22s;z-index:99}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.tabs{display:flex;gap:4px;margin-bottom:14px;flex-wrap:wrap}
+.tab{border:1px solid transparent;background:transparent;padding:6px 12px;border-radius:8px;font-size:12.5px;color:var(--sub);cursor:pointer}
+.tab.on{background:#fff;border-color:var(--line);color:var(--ink);font-weight:600}
+.filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.filters input,.filters select{border:1px solid var(--line);border-radius:8px;padding:7px 11px;background:#fff;font-size:13px;outline:none}
+.filters input{flex:1;min-width:180px}
+/* ---------- 响应式 ---------- */
+@media (max-width:1080px){ .g4{grid-template-columns:repeat(2,minmax(0,1fr))} .g3{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:880px){
+  .app{display:block}
+  .sidebar{
+    position:fixed;left:0;top:0;bottom:0;z-index:50;transform:translateX(-100%);transition:.22s;height:100vh;box-shadow:8px 0 24px rgba(0,0,0,.08)
+  }
+  .sidebar.open{transform:none}
+  .main{min-height:100vh}
+  .content{padding:16px 14px 70px}
+  .g4,.g3,.g2{grid-template-columns:1fr}
+  .topbar{padding:0 12px;gap:8px}
+  .who{display:none}
+  .page-head h1{font-size:18px}
+  .menu-btn{display:grid !important}
+  .form .row2,.form .row3{grid-template-columns:1fr}
+  .hbar{grid-template-columns:80px 1fr 38px}
+  .msg{max-width:94%}
+}
+.menu-btn{display:none;width:34px;height:34px;border-radius:8px;border:1px solid var(--line);background:#fff;cursor:pointer;place-items:center}
+
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><b>职途</b><span>你的智能求职工作台</span></div>
+    <nav class="nav" id="nav"></nav>
+    <div class="pro">
+      <b>AI 求职助手</b>
+      <p>本地规则引擎，覆盖 JD 分析、模拟面试、Offer 对比。</p>
+      <button class="btn primary sm" style="width:100%;justify-content:center" data-act="ai-ask" data-q="分析一下我手上匹配度最高的岗位">立即对话</button>
+    </div>
+  </aside>
+  <div class="main">
+    <header class="topbar">
+      <button class="menu-btn" data-act="menu" aria-label="菜单">☰</button>
+      <div class="search"><span style="opacity:.6">🔍</span><input id="globalSearch" placeholder="搜索岗位 / 公司 / 投递记录..." aria-label="全站搜索"></div>
+      <div class="right">
+        <button class="icon-btn" data-act="notify" title="通知">🔔<span class="badge-dot"></span></button>
+        <div class="avatar">罗</div>
+        <span class="who">罗涛 · 食品科学与工程</span>
+        <button class="icon-btn" data-act="reset-data" title="恢复初始数据">↺</button>
+      </div>
+    </header>
+    <main class="content" id="view"></main>
+  </div>
+</div>
+<div class="mask" id="mask"><div class="modal" id="modal"></div></div>
+<div class="toast" id="toast"></div>
+<script>
+/* 职途 · 初始数据（食品研发方向 · 罗涛画像）
+   说明：岗位与项目经历来自公开岗位页与本人真实经历；标 [示例] 的条目为演示用占位，可在应用内删除。 */
+window.SEED = {
+  profile: {
+    name: "罗涛",
+    school: "韩山师范学院",
+    major: "食品科学与工程",
+    grade: "2023.09–2027.06 · 本科在读",
+    rank: "专业排名前 4%（综测，120 人）",
+    english: "CET-6 487",
+    target: "食品研发 / 研发助理",
+    cities: "广州、深圳、佛山、东莞",
+    salary: "不限",
+    skills: ["小试/中试流程", "配方梯度设计", "感官评价", "TMS-PRO 质构仪", "X-Rite MetaVue 色差仪", "卤素水分仪", "水分活度仪 Aw", "Excel 透视表", "HACCP 巡检"]
+  },
+  jobs: [
+    { id: "j1", title: "研发助理（烘焙食品方向）", company: "锦华食品（广州）集团有限公司", city: "广州 · 花都炭步", salary: "4K-6K", type: "全职", match: 92, deadline: "12 天", stage: "已投递", favorite: true, url: "https://www.izhanchi.com/position-detail/100441640", note: "JD 核心是打样、记录小试样工艺比例、留样评测，接受应届；薪资偏低、通勤远。" },
+    { id: "j2", title: "产品开发岗", company: "深圳市晨光乳业有限公司", city: "深圳 · 光明", salary: "6K-12K", type: "全职", match: 88, deadline: "9 天", stage: "已投递", favorite: false, url: "http://jy.ncu.edu.cn/detail/job?id=3264542", note: "跟进小试到量产全流程、Excel 数据整理；含包材管理与文职，配方权重低。" },
+    { id: "j3", title: "饮料研发助理（华南研发中心 · 2027 校招）", company: "佳味天成（佛山）食品科技有限公司", city: "佛山 · 顺德", salary: "实习 4000/月", type: "实习", match: 86, deadline: "5 天", stage: "面试中", favorite: true, url: "https://xjh.niuqizp.com/xjhview-7YrYCntML.html", note: "宣讲会在江南大学（无锡），需微信预约；12 月到岗实习。" },
+    { id: "j4", title: "研发技术员", company: "深圳市金多多食品有限公司", city: "深圳 · 福田", salary: "5K-6K", type: "全职", match: 78, deadline: "14 天", stage: "待投递", favorite: false, url: "https://career.wyu.edu.cn/detail/job?id=2687918", note: "发布于 2026-03-10，距今约 8 个月，需先确认是否仍在招。" },
+    { id: "j5", title: "饮料研发助理", company: "东莞劲宝食品有限公司", city: "东莞 · 横沥", salary: "4-6K", type: "全职", match: 76, deadline: "20 天", stage: "待投递", favorite: false, url: "http://campus.jobcn.com/position/detail.xhtml?comId=656959&posId=4405191", note: "大专起；要求现居东莞；现调饮品经验优先。" },
+    { id: "j6", title: "食品研发助理", company: "广东江大和风香精香料有限公司", city: "广州 · 从化", salary: "6000-8000", type: "全职", match: 72, deadline: "30 天", stage: "待投递", favorite: false, url: "https://food.nwsuaf.edu.cn/zhdt/jyxx/1c9f995d51934dc5ba38d607c2325bc8.htm", note: "公告发布于 2025-04-21，已超一年，投递前须核实。" }
+  ],
+  resumes: [
+    { id: "r1", name: "v3.2 食品研发 · 烘焙版", tags: ["全职", "研发助理"], match: 92, status: "使用中", updated: "2026-11-22", focus: "打样与留样评测、配方梯度、质构对标" },
+    { id: "r2", name: "v2.0 研发助理通用版", tags: ["全职", "研发助理"], match: 88, status: "待优化", updated: "2026-11-18", focus: "小试记录、数据汇总、法规基础" },
+    { id: "r3", name: "v1.5 质量管理版", tags: ["全职", "品控"], match: 76, status: "待完善", updated: "2026-10-30", focus: "HACCP 巡检、异常上报、批次跟样" }
+  ],
+  projects: [
+    { id: "p1", title: "小米糕配方梯度开发（利口福科创研究院）", tags: ["小试 40+", "TMS-PRO", "感官评价"], desc: "设定粳米粉:糯米粉 7:3 / 6:4 / 5:5 三档梯度，独立设计执行小试 40 余次；用 TMS-PRO 测硬度与咀嚼并对标竞品，自研样品硬度较竞品低 23%；锁定高糯米粉占比软质配比区间。", date: "2026-11" },
+    { id: "p2", title: "保健食品小试到中试（长兴生物产品开发部）", tags: ["配方验证", "中试", "记录 60+"], desc: "参与保健食品新品从配方验证到工艺可行性测试；独立完成小试记录表 60 余张，汇总 20 余批次实验数据；起草配方配比调整建议 5 份，2 条被采纳。", date: "2026-02" },
+    { id: "p3", title: "三条产线 HACCP 制程巡检（金绿集团）", tags: ["HACCP", "异常上报"], desc: "清洗／卤制／真空包装三条产线每 2 小时核查参数，排查上报 4 起参数偏移，未出现批次质量问题；跟进 3 款新品共 11 批次打样。", date: "2025-09" },
+    { id: "p4", title: "省级粤东药食资源重点实验室 助理", tags: ["仪器维护", "物料登记"], desc: "负责仪器维护、物料登记与试剂耗材盘点，保障实验室日常运转。", date: "2025-05" }
+  ],
+  applications: [
+    { id: "a1", company: "锦华食品（广州）集团", title: "研发助理（烘焙食品方向）", city: "广州 · 花都", date: "2026-11-21", status: "面试中", steps: ["投递简历", "简历筛选", "HR 面", "技术面"], current: 2, note: "HR 已加微信，技术面安排在下周。" },
+    { id: "a2", company: "深圳市晨光乳业", title: "产品开发岗", city: "深圳 · 光明", date: "2026-11-19", status: "已投递", steps: ["投递简历", "简历筛选", "一面", "二面"], current: 1, note: "官网投递，等待筛选结果。" },
+    { id: "a3", company: "佳味天成（佛山）食品科技", title: "饮料研发助理", city: "佛山 · 顺德", date: "2026-11-17", status: "面试中", steps: ["投递简历", "简历筛选", "初面", "复试"], current: 2, note: "已微信预约登记，等待场次确认。" }
+  ],
+  interviews: [
+    { id: "i1", company: "锦华食品（广州）集团", title: "研发助理（烘焙食品方向）", round: "技术面", date: "2026-11-26", time: "14:00–15:00", place: "线上面试", score: 0, result: "待进行" },
+    { id: "i2", company: "佳味天成（佛山）食品科技", title: "饮料研发助理", round: "初面", date: "2026-11-24", time: "10:00–11:00", place: "线上（微信）", score: 0, result: "待进行" },
+    { id: "i3", company: "深圳市晨光乳业 [示例]", title: "产品开发岗", round: "统一一面", date: "2026-11-12", time: "15:00–16:00", place: "线上", score: 7, result: "通过" }
+  ],
+  contacts: [
+    { id: "c1", name: "陈学长 [示例]", company: "锦华食品", role: "研发工程师", date: "2026-11-20", status: "沟通中", followup: "已发简历，等内推反馈" },
+    { id: "c2", name: "学院就业老师 [示例]", company: "韩山师范学院", role: "就业指导", date: "2026-11-15", status: "已回复", followup: "提供了 3 家粤东食品企业名单" }
+  ],
+  plans: [
+    { id: "l1", name: "GB 2760 / 7718 法规复盘", target: "食品研发 / 品控", weeks: 2, priority: "高", deadline: "2026-11-30", tasks: [ { title: "GB 2760 添加剂使用范围梳理", date: "2026-11-24", done: true }, { title: "GB 7718 标签要素自查清单", date: "2026-11-27", done: true }, { title: "整理 10 个常见违规案例", date: "2026-11-30", done: false } ] },
+    { id: "l2", name: "质构数据与 Excel 透视表", target: "研发助理", weeks: 3, priority: "中", deadline: "2026-12-08", tasks: [ { title: "TPA 曲线参数含义复习", date: "2026-11-25", done: true }, { title: "把 40 次小试数据建成透视表", date: "2026-12-08", done: false } ] }
+  ],
+  diaries: [
+    { id: "d1", date: "2026-11-22", mood: 4, energy: 3, text: "锦华 HR 回复了，技术面排在下周。把小米糕的配比区间又整理了一遍，心里踏实一些。", tags: ["面试", "复盘"] },
+    { id: "d2", date: "2026-11-20", mood: 3, energy: 3, text: "晨光官网投递卡在附件上传，换了浏览器才好。晚上改了一版简历开头。", tags: ["投递"] },
+    { id: "d3", date: "2026-11-18", mood: 4, energy: 4, text: "和学长聊了半小时，知道了研发助理面试更看重能不能下产线。", tags: ["人脉"] }
+  ],
+  offers: [],
+  materials: [
+    { id: "m1", type: "公司分析", title: "锦华食品（广州）研发助理 JD 要点", summary: "打样、记录小试样工艺比例、留样观察评测、协助编写配方资料；本科、可接受应届。", source: "易展翅岗位页", date: "2026-11-22", tags: ["烘焙", "研发助理"] },
+    { id: "m2", type: "公司分析", title: "晨光乳业 2026 校招简章要点", summary: "研发工程师岗要求 985/211 硕士；产品开发岗本科可投、应届或 1 年内，6K-12K。", source: "西北农林科大食品学院就业信息", date: "2026-11-16", tags: ["乳品", "校招"] },
+    { id: "m3", type: "笔试题", title: "食品研发常见笔试题型汇总 [示例]", summary: "配方计算、添加剂限量、标签法规、微生物指标判定、质构指标解释。", source: "自整理", date: "2026-11-10", tags: ["法规", "计算"] },
+    { id: "m4", type: "面经", title: "研发助理面试常问题 [示例]", summary: "为什么选食品研发、讲一次独立小试、产线口感波动怎么排查、如何做降本。", source: "自整理", date: "2026-11-12", tags: ["面试"] }
+  ],
+  nodes: [
+    { id: "n1", date: "2026-11-24", title: "佳味天成 初面（线上）", tag: "面试" },
+    { id: "n2", date: "2026-11-26", title: "锦华食品 技术面", tag: "面试" },
+    { id: "n3", date: "2026-11-30", title: "GB 2760 复盘截止", tag: "学习" },
+    { id: "n4", date: "2026-12-08", title: "质构数据透视表完成", tag: "学习" }
+  ],
+  goals: { monthly: 30, invested: 3 }
+};
+
+/* ============ 职途 · 核心（存储 / 工具 / 图表 / 路由） ============ */
+const DB_KEY = "zhitu.food.v1";
+
+function clone(o) { return JSON.parse(JSON.stringify(o)); }
+function loadDB() {
+  try {
+    const raw = localStorage.getItem(DB_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  return clone(window.SEED);
+}
+let db = loadDB();
+function save() {
+  try { localStorage.setItem(DB_KEY, JSON.stringify(db)); } catch (e) { toast("本机存储不可用，改动仅本次有效"); }
+}
+
+/* ---- 小工具 ---- */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const uid = (p) => p + Math.random().toString(36).slice(2, 7);
+const TODAY = new Date("2026-11-22T09:00:00+08:00");
+function dayDiff(d) {
+  const t = new Date(d + "T00:00:00+08:00");
+  return Math.round((t - new Date("2026-11-22T00:00:00+08:00")) / 86400000);
+}
+function toast(msg) {
+  let t = $("#toast");
+  if (!t) { t = document.createElement("div"); t.id = "toast"; t.className = "toast"; document.body.appendChild(t); }
+  t.textContent = msg; t.classList.add("on");
+  clearTimeout(window.__tt); window.__tt = setTimeout(() => t.classList.remove("on"), 1800);
+}
+const money = (s) => esc(s || "未公开");
+
+/* ---- 图表（内联 SVG，无外部依赖） ---- */
+function hbars(items) {
+  return '<div class="hbars">' + items.map((it) => {
+    const w = Math.max(0, Math.min(100, (it.value / (it.max || 100)) * 100));
+    return `<div class="hbar"><span>${esc(it.label)}</span><div class="b"><i style="width:${w}%;background:${it.color || "var(--brand)"}"></i></div><span class="muted">${esc(it.text || it.value)}</span></div>`;
+  }).join("") + "</div>";
+}
+
+function lineChart(labels, series, h = 190) {
+  const W = 560, P = 34, top = 14, bottom = 26;
+  const all = series.flatMap((s) => s.data);
+  const max = Math.max(1, ...all) * 1.15;
+  const x = (i) => P + (i * (W - P - 12)) / Math.max(1, labels.length - 1);
+  const y = (v) => top + (h - top - bottom) * (1 - v / max);
+  let grid = "";
+  for (let g = 0; g <= 4; g++) {
+    const yy = top + ((h - top - bottom) * g) / 4;
+    grid += `<line x1="${P}" y1="${yy}" x2="${W - 12}" y2="${yy}" stroke="#f0f1f3"/>`;
+  }
+  const paths = series.map((s) => {
+    const d = s.data.map((v, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(" ");
+    const dots = s.data.map((v, i) => `<circle cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="2.8" fill="${s.color}"/>`).join("");
+    return `<path d="${d}" fill="none" stroke="${s.color}" stroke-width="2" stroke-linejoin="round"/>${dots}`;
+  }).join("");
+  const xlab = labels.map((l, i) => `<text x="${x(i).toFixed(1)}" y="${h - 8}" font-size="10" fill="#86909c" text-anchor="middle">${esc(l)}</text>`).join("");
+  return `<svg class="chart" viewBox="0 0 ${W} ${h}" preserveAspectRatio="xMidYMid meet">${grid}${paths}${xlab}</svg>`;
+}
+
+function radarChart(dims, me, avg) {
+  const S = 300, C = 150, R = 96;
+  const n = dims.length;
+  const pt = (i, r) => {
+    const a = (Math.PI * 2 * i) / n - Math.PI / 2;
+    return [C + Math.cos(a) * r, C + Math.sin(a) * r];
+  };
+  let rings = "";
+  [0.25, 0.5, 0.75, 1].forEach((k) => {
+    const pts = dims.map((_, i) => pt(i, R * k).map((v) => v.toFixed(1)).join(",")).join(" ");
+    rings += `<polygon points="${pts}" fill="none" stroke="#eceef1"/>`;
+  });
+  const spokes = dims.map((_, i) => {
+    const [px, py] = pt(i, R);
+    return `<line x1="${C}" y1="${C}" x2="${px.toFixed(1)}" y2="${py.toFixed(1)}" stroke="#eceef1"/>`;
+  }).join("");
+  const poly = (arr, color, fill) => {
+    const pts = arr.map((v, i) => pt(i, (R * v) / 100).map((p) => p.toFixed(1)).join(",")).join(" ");
+    return `<polygon points="${pts}" fill="${fill}" stroke="${color}" stroke-width="2"/>`;
+  };
+  const labels = dims.map((d, i) => {
+    const [px, py] = pt(i, R + 20);
+    return `<text x="${px.toFixed(1)}" y="${(py + 3).toFixed(1)}" font-size="10.5" fill="#4e5969" text-anchor="middle">${esc(d)}</text>`;
+  }).join("");
+  return `<svg class="chart" viewBox="0 0 ${S} ${S}" style="max-width:320px;margin:0 auto">${rings}${spokes}${poly(avg, "#c9d3e3", "rgba(201,211,227,.22)")}${poly(me, "#1f5fbf", "rgba(31,95,191,.14)")}${labels}</svg>`;
+}
+
+function donut(items, size = 150) {
+  const total = items.reduce((a, b) => a + b.value, 0) || 1;
+  let acc = 0, arcs = "";
+  const R = 60, r = 38, C = 75;
+  items.forEach((it) => {
+    const a0 = (acc / total) * Math.PI * 2 - Math.PI / 2;
+    acc += it.value;
+    const a1 = (acc / total) * Math.PI * 2 - Math.PI / 2;
+    const p = (rad, a) => [C + Math.cos(a) * rad, C + Math.sin(a) * rad];
+    const [x0, y0] = p(R, a0), [x1, y1] = p(R, a1), [x2, y2] = p(r, a1), [x3, y3] = p(r, a0);
+    const large = a1 - a0 > Math.PI ? 1 : 0;
+    arcs += `<path d="M${x0},${y0} A${R},${R} 0 ${large} 1 ${x1},${y1} L${x2},${y2} A${r},${r} 0 ${large} 0 ${x3},${y3} Z" fill="${it.color}"/>`;
+  });
+  return `<svg class="chart" viewBox="0 0 ${size} ${size}" style="max-width:${size}px">${arcs}</svg>`;
+}
+
+function ring(pct, size = 150, label = "") {
+  const C = 75, R = 52, L = 2 * Math.PI * R;
+  const v = Math.max(0, Math.min(100, pct));
+  return `<svg class="chart" viewBox="0 0 ${size} ${size}" style="max-width:${size}px">
+    <circle cx="${C}" cy="${C}" r="${R}" fill="none" stroke="#f0f1f3" stroke-width="12"/>
+    <circle cx="${C}" cy="${C}" r="${R}" fill="none" stroke="#1f5fbf" stroke-width="12" stroke-linecap="round"
+      stroke-dasharray="${(L * v) / 100} ${L}" transform="rotate(-90 ${C} ${C})"/>
+    <text x="${C}" y="${C + 2}" text-anchor="middle" font-size="20" font-weight="600" fill="#1d2129">${v}%</text>
+    <text x="${C}" y="${C + 20}" text-anchor="middle" font-size="10" fill="#86909c">${esc(label)}</text>
+  </svg>`;
+}
+
+/* ---- 弹窗 ---- */
+let modalCtx = null;
+function closeModal() { $("#mask").classList.remove("on"); modalCtx = null; }
+function openModal({ title, fields, submitText = "保存", onSubmit }) {
+  modalCtx = { fields, onSubmit };
+  const body = fields.map((f) => {
+    const id = "f_" + f.k;
+    if (f.type === "textarea") return `<div><label>${esc(f.label)}</label><textarea id="${id}" rows="${f.rows || 3}" placeholder="${esc(f.ph || "")}">${esc(f.value || "")}</textarea></div>`;
+    if (f.type === "select") return `<div><label>${esc(f.label)}</label><select id="${id}">${f.options.map((o) => `<option value="${esc(o)}" ${o === f.value ? "selected" : ""}>${esc(o)}</option>`).join("")}</select></div>`;
+    return `<div><label>${esc(f.label)}</label><input id="${id}" type="${f.type || "text"}" value="${esc(f.value == null ? "" : f.value)}" placeholder="${esc(f.ph || "")}" ${f.step ? `step="${f.step}"` : ""}></div>`;
+  }).join("");
+  $("#modal").innerHTML = `<h3>${esc(title)}</h3><div class="form">${body}</div>
+    <div class="foot"><button class="btn" data-act="modal-close">取消</button><button class="btn primary" data-act="modal-submit">${esc(submitText)}</button></div>`;
+  $("#mask").classList.add("on");
+  const first = $("#modal input, #modal textarea");
+  if (first) setTimeout(() => first.focus(), 40);
+}
+function submitModal() {
+  if (!modalCtx) return;
+  const out = {};
+  modalCtx.fields.forEach((f) => { out[f.k] = ($("#f_" + f.k) || {}).value ?? ""; });
+  modalCtx.onSubmit(out);
+}
+
+/* ---- 路由 ---- */
+const NAV = [
+  ["dashboard", "求职驾驶舱", "🎯"], ["jobs", "岗位管理", "📋"], ["resume", "简历中心", "📄"],
+  ["apply", "投递管理", "✈️"], ["interview", "面试中心", "🎤"], ["assistant", "AI 求职助手", "✨"],
+  ["contacts", "人脉与内推", "👥"], ["learning", "学习提升", "📚"], ["diary", "心态日记", "🌙"],
+  ["plan", "时间规划", "🗓"], ["offers", "Offer 管理", "🏆"], ["analysis", "求职能力分析", "📊"],
+  ["library", "资料库", "🗂"]
+];
+const state = { view: "dashboard", q: "", chat: [] };
+
+function go(view) {
+  state.view = view;
+  if (location.hash !== "#/" + view) location.hash = "#/" + view;
+  render();
+  window.scrollTo({ top: 0 });
+  $(".sidebar").classList.remove("open");
+}
+function render() {
+  const v = VIEWS[state.view] || VIEWS.dashboard;
+  $("#view").innerHTML = v.render();
+  $$(".nav a").forEach((a) => a.classList.toggle("on", a.dataset.view === state.view));
+  const openApply = db.applications.filter((a) => a.status !== "已结束").length;
+  const dot = $("#navDot");
+  if (dot) { dot.textContent = openApply || ""; dot.style.display = openApply ? "" : "none"; }
+}
+
+/* ---- 通用片段 ---- */
+function pageHead(title, sub, ops) {
+  return `<div class="page-head"><div><h1>${esc(title)}</h1><p>${esc(sub)}</p></div><div class="ops">${ops || ""}</div></div>`;
+}
+function stageChip(stage) {
+  const map = { "已投递": "brand", "面试中": "warn", "笔试": "warn", "已面试": "brand", "已 offer": "ok", "已offer": "ok", "待投递": "ghost", "已拒绝": "bad", "已结束": "ghost" };
+  return `<span class="chip ${map[stage] || "ghost"}">${esc(stage)}</span>`;
+}
+
+/* ============ 视图 A：驾驶舱 / 岗位 / 简历 / 投递 / 面试 ============ */
+const VIEWS = {};
+
+/* ---------- P1 求职驾驶舱 ---------- */
+VIEWS.dashboard = {
+  render() {
+    const jobs = db.jobs;
+    const applied = db.applications.length;
+    const upcoming = db.interviews.filter((i) => i.result === "待进行");
+    const offers = db.offers.length;
+    const top3 = [...jobs].sort((a, b) => b.match - a.match).slice(0, 3);
+    const soon = db.nodes.filter((n) => dayDiff(n.date) >= 0 && dayDiff(n.date) <= 10).sort((a, b) => dayDiff(a.date) - dayDiff(b.date));
+    const funnel = [
+      { label: "已投递", value: db.applications.length },
+      { label: "筛选中", value: db.applications.filter((a) => a.current >= 1).length },
+      { label: "面试中", value: db.applications.filter((a) => a.status === "面试中").length },
+      { label: "Offer", value: offers }
+    ];
+    const maxF = Math.max(1, ...funnel.map((f) => f.value));
+    return pageHead("求职驾驶舱", "今天该做什么，一屏看完。数据全部存在你自己的浏览器里。",
+      `<button class="btn" data-act="export-json">导出数据</button><button class="btn primary" data-act="go" data-view="jobs">去挑岗位</button>`)
+      + `<div class="grid g4">
+        <div class="kpi"><div class="t">在库岗位</div><div class="v">${jobs.length}<small>个</small></div><div class="d">已投 ${applied} · 待投 ${jobs.filter((j) => j.stage === "待投递").length}</div></div>
+        <div class="kpi"><div class="t">面试安排</div><div class="v">${upcoming.length}<small>场待进行</small></div><div class="d">共 ${db.interviews.length} 场记录</div></div>
+        <div class="kpi"><div class="t">Offer</div><div class="v">${offers}<small>个</small></div><div class="d">${offers ? "可进入对比" : "还没有 Offer，先攒面试"}</div></div>
+        <div class="kpi"><div class="t">本月投递目标</div><div class="v">${db.goals.invested}/${db.goals.monthly}<small>家</small></div><div class="d">完成 ${Math.round((db.goals.invested / db.goals.monthly) * 100)}%</div></div>
+      </div>
+      <div class="grid g2" style="margin-top:14px">
+        <div class="card">
+          <h3>最近 10 天要办的事</h3>
+          ${soon.length ? `<div class="tl">${soon.map((n) => `<div class="tl-item ${dayDiff(n.date) <= 2 ? "done" : ""}"><div class="row-between"><b>${esc(n.title)}</b><span class="chip ${n.tag === "面试" ? "warn" : "ghost"}">${esc(n.tag)}</span></div><div class="muted">${esc(n.date)} · ${dayDiff(n.date) === 0 ? "今天" : dayDiff(n.date) + " 天后"}</div></div>`).join("")}</div>` : `<div class="empty">近 10 天没有节点</div>`}
+        </div>
+        <div class="card">
+          <h3>投递漏斗</h3>
+          ${hbars(funnel.map((f) => ({ label: f.label, value: f.value, max: maxF, text: f.value + " 家" })))}
+          <div class="note info" style="margin-top:12px">漏斗按「投递记录」的当前阶段统计，推进阶段后会自动变化。</div>
+        </div>
+      </div>
+      <div class="grid g2" style="margin-top:14px">
+        <div class="card">
+          <h3>匹配度最高的 3 个岗位<span class="tag">按简历画像打分</span></h3>
+          ${top3.map((j) => `<div class="app-card" style="margin-bottom:10px">
+            <div class="head"><div><div class="n">${esc(j.title)}</div><div class="meta">${esc(j.company)} · ${esc(j.city)} · ${money(j.salary)}</div></div>
+            <div class="right"><b style="font-size:17px;color:var(--brand)">${j.match}</b><div class="muted">匹配度</div></div></div>
+            <div class="row-between" style="margin-top:8px"><span class="muted">${esc(j.note)}</span></div>
+          </div>`).join("")}
+        </div>
+        <div class="card">
+          <h3>能力雷达<span class="tag">主观自评，可在「求职能力分析」调整</span></h3>
+          ${radarChart(["技术能力", "项目能力", "沟通能力", "行业知识", "执行能力", "简历质量"], [78, 86, 68, 74, 88, 82], [72, 74, 70, 70, 74, 72])}
+          <div class="legend"><span><i style="background:#1f5fbf"></i>自己</span><span><i style="background:#c9d3e3"></i>同届均值（估计）</span></div>
+        </div>
+      </div>`;
+  }
+};
+
+/* ---------- P2 岗位管理 ---------- */
+VIEWS.jobs = {
+  render() {
+    const q = state.q.trim().toLowerCase();
+    let list = db.jobs.filter((j) => {
+      const hit = !q || (j.title + j.company + j.city).toLowerCase().includes(q);
+      return hit && (state.jobStage === "全部阶段" || j.stage === state.jobStage)
+        && (state.jobType === "全部类型" || j.type === state.jobType);
+    });
+    if (state.jobSort === "匹配度") list.sort((a, b) => b.match - a.match);
+    if (state.jobSort === "最近更新") list.sort((a, b) => (a.deadline > b.deadline ? 1 : -1));
+    const stages = ["全部阶段", "待投递", "已投递", "面试中", "已面试", "已 offer", "已拒绝"];
+    return pageHead("岗位管理", "收藏、比较、跟进每一个目标岗位；链接都能回到原始招聘页。",
+      `<button class="btn" data-act="export-md">导出清单</button><button class="btn primary" data-act="job-add">+ 添加岗位</button>`)
+      + `<div class="filters">
+        <input id="q" placeholder="搜索岗位 / 公司 / 城市" value="${esc(state.q)}">
+        <select data-act="job-filter" data-key="jobStage">${stages.map((s) => `<option ${s === state.jobStage ? "selected" : ""}>${s}</option>`).join("")}</select>
+        <select data-act="job-filter" data-key="jobType">${["全部类型", "全职", "实习"].map((s) => `<option ${s === state.jobType ? "selected" : ""}>${s}</option>`).join("")}</select>
+        <select data-act="job-filter" data-key="jobSort">${["最近更新", "匹配度"].map((s) => `<option ${s === state.jobSort ? "selected" : ""}>${s}</option>`).join("")}</select>
+      </div>
+      <div class="table-wrap"><table><thead><tr>
+        <th>岗位 / 公司</th><th>城市</th><th>薪资</th><th>类型</th><th>匹配度</th><th>阶段</th><th>截止</th><th>操作</th>
+      </tr></thead><tbody>
+      ${list.length ? list.map((j) => `<tr>
+        <td><div class="t-title">${esc(j.title)}</div><div class="t-sub">${esc(j.company)}</div></td>
+        <td>${esc(j.city)}</td><td>${money(j.salary)}</td><td>${esc(j.type)}</td>
+        <td><div style="display:flex;align-items:center;gap:8px"><div class="bar" style="width:66px"><i style="width:${j.match}%"></i></div><span class="muted">${j.match}%</span></div></td>
+        <td>${stageChip(j.stage)}${j.favorite ? ' <span class="chip brand">已收藏</span>' : ""}</td>
+        <td class="muted">${esc(j.deadline)}</td>
+        <td><div class="ops-inline">
+          <button class="iconlink" title="收藏" data-act="job-fav" data-id="${j.id}">${j.favorite ? "★" : "☆"}</button>
+          <button class="iconlink" title="查看" data-act="job-view" data-id="${j.id}">👁</button>
+          <button class="iconlink" title="编辑" data-act="job-edit" data-id="${j.id}">✎</button>
+          <button class="iconlink" title="删除" data-act="job-del" data-id="${j.id}">🗑</button>
+        </div></td>
+      </tr>`).join("") : `<tr><td colspan="8"><div class="empty">没有符合条件的岗位。换个关键词，或点右上角添加。</div></td></tr>`}
+      </tbody></table></div>
+      <div class="note info" style="margin-top:12px">岗位链接来自公开招聘页；标「[示例]」的条目是演示占位。薪资以原页面为准。</div>`;
+  }
+};
+
+/* ---------- P3 简历中心 ---------- */
+VIEWS.resume = {
+  render() {
+    return pageHead("简历中心", "一个岗位一版简历，把项目经历拆成可复用的证据块。",
+      `<button class="btn" data-act="resume-add">+ 新建简历版本</button><button class="btn primary" data-act="project-add">+ 新增项目</button>`)
+      + `<div class="grid g3">
+        ${db.resumes.map((r) => `<div class="card">
+          <div class="row-between"><b>${esc(r.name)}</b><span class="chip ${r.status === "使用中" ? "ok" : r.status === "待优化" ? "warn" : "ghost"}">${esc(r.status)}</span></div>
+          <div style="margin:8px 0">${r.tags.map((t) => `<span class="chip">${esc(t)}</span>`).join("")}</div>
+          <div class="muted">${esc(r.focus)}</div>
+          <div class="row-between" style="margin-top:12px">
+            <div style="flex:1"><div class="bar"><i style="width:${r.match}%;${r.match >= 85 ? "" : "background:var(--warn)"}"></i></div><div class="muted" style="margin-top:4px">匹配度 ${r.match}% · 更新 ${esc(r.updated)}</div></div>
+            <button class="iconlink" data-act="resume-del" data-id="${r.id}" title="删除">🗑</button>
+          </div>
+        </div>`).join("")}
+      </div>
+      <h2 style="font-size:15px;margin:22px 0 10px">项目经历库 <span class="muted" style="font-weight:400">· ${db.projects.length} 条</span></h2>
+      <div class="grid g2">
+        ${db.projects.map((p) => `<div class="card">
+          <div class="row-between"><b>${esc(p.title)}</b><span class="muted">${esc(p.date)}</span></div>
+          <p class="muted" style="margin:8px 0 10px;line-height:1.7">${esc(p.desc)}</p>
+          <div>${p.tags.map((t) => `<span class="chip brand">${esc(t)}</span>`).join("")}</div>
+          <div class="row-between" style="margin-top:8px"><span class="muted">写简历时可直接引用这条的量化结果</span><button class="iconlink" data-act="project-del" data-id="${p.id}">🗑</button></div>
+        </div>`).join("")}
+      </div>`;
+  }
+};
+
+/* ---------- P4 投递管理 ---------- */
+VIEWS.apply = {
+  render() {
+    const list = db.applications;
+    return pageHead("投递管理", "每家公司一条时间轴，点阶段就能推进。",
+      `<button class="btn" data-act="export-md">导出记录</button><button class="btn primary" data-act="apply-add">+ 记录投递</button>`)
+      + (list.length ? list.map((a) => {
+        const steps = a.steps.map((s, i) => `<span class="s ${i <= a.current ? "on" : ""}" data-act="apply-step" data-id="${a.id}" data-idx="${i}" style="cursor:pointer"><i>${i <= a.current ? "✓" : ""}</i>${esc(s)}</span>`).join('<span class="sep"></span>');
+        return `<div class="app-card">
+          <div class="head">
+            <div><div class="n">${esc(a.company)}</div><div class="meta">${esc(a.title)} · ${esc(a.city)} · 投递于 ${esc(a.date)}</div></div>
+            <div class="right">${stageChip(a.status)}<div class="muted" style="margin-top:4px">${Math.abs(dayDiff(a.date))} 天前</div></div>
+          </div>
+          <div class="stage">${steps}</div>
+          ${a.note ? `<div class="muted" style="margin-top:8px">备注：${esc(a.note)}</div>` : ""}
+          <div class="row-between" style="margin-top:10px">
+            <span class="muted">当前：${esc(a.steps[a.current] || "")}</span>
+            <span class="ops-inline">
+              <button class="btn sm" data-act="apply-advance" data-id="${a.id}">推进到下一步</button>
+              <button class="btn sm" data-act="apply-edit" data-id="${a.id}">编辑</button>
+              <button class="btn sm danger" data-act="apply-del" data-id="${a.id}">删除</button>
+            </span>
+          </div>
+        </div>`;
+      }).join("") : `<div class="empty">还没有投递记录。点右上角「记录投递」，或从岗位管理里挑一条开始。</div>`);
+  }
+};
+
+/* ---------- P5 面试中心 ---------- */
+function calendarHTML() {
+  const y = 2026, m = 11;
+  const first = new Date(y, m - 1, 1);
+  const startDow = first.getDay();
+  const days = new Date(y, m, 0).getDate();
+  const marks = {};
+  db.interviews.forEach((i) => { if (i.date && i.date.startsWith("2026-11")) marks[Number(i.date.slice(8, 10))] = true; });
+  let cells = "";
+  for (let i = 0; i < startDow; i++) cells += `<div style="color:#c9cdd4;text-align:center;padding:8px 0;font-size:12px"></div>`;
+  for (let d = 1; d <= days; d++) {
+    const isToday = d === 22;
+    cells += `<div style="text-align:center;padding:8px 0;font-size:12.5px;border-radius:8px;${isToday ? "background:var(--brand);color:#fff;font-weight:600" : marks[d] ? "background:var(--brand-soft);color:var(--brand);font-weight:600" : ""}">${d}${marks[d] && !isToday ? '<div style="height:3px;border-radius:2px;background:var(--brand);margin:3px 30% 0"></div>' : ""}</div>`;
+  }
+  return `<div class="card"><h3>面试日历<span class="tag">2026 年 11 月</span></h3>
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;font-size:11px;color:#86909c;margin-bottom:4px">
+      ${["日", "一", "二", "三", "四", "五", "六"].map((d) => `<div style="text-align:center">${d}</div>`).join("")}
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px">${cells}</div>
+    <div class="legend"><span><i style="background:var(--brand)"></i>今天</span><span><i style="background:var(--brand-soft)"></i>有面试</span></div>
+  </div>`;
+}
+VIEWS.interview = {
+  render() {
+    const up = db.interviews.filter((i) => i.result === "待进行").sort((a, b) => (a.date > b.date ? 1 : -1));
+    return pageHead("面试中心", "日程、复盘、评分放一起，面试前十分钟还能翻一遍。",
+      `<button class="btn" data-act="interview-add">+ 记录面试</button><button class="btn primary" data-act="go" data-view="assistant">AI 模拟面试</button>`)
+      + `<div class="grid g2">
+        ${calendarHTML()}
+        <div class="card"><h3>即将到来<span class="tag">${up.length} 场</span></h3>
+          ${up.length ? up.map((i) => `<div class="app-card" style="margin-bottom:10px">
+            <div class="head"><div><div class="n">${esc(i.company)}</div><div class="meta">${esc(i.title)} · ${esc(i.place)}</div></div>
+            <div class="right"><span class="chip warn">${esc(i.round)}</span><div class="muted" style="margin-top:4px">${esc(i.date)} ${esc(i.time)}</div></div></div>
+          </div>`).join("") : `<div class="empty">暂时没有待进行的面试</div>`}
+        </div>
+      </div>
+      <h2 style="font-size:15px;margin:22px 0 10px">面试记录</h2>
+      <div class="table-wrap"><table><thead><tr><th>公司</th><th>岗位</th><th>轮次</th><th>日期</th><th>评分</th><th>结果</th><th>操作</th></tr></thead><tbody>
+      ${db.interviews.length ? db.interviews.map((i) => `<tr>
+        <td class="t-title">${esc(i.company)}</td><td>${esc(i.title)}</td><td><span class="chip">${esc(i.round)}</span></td>
+        <td class="muted">${esc(i.date)}</td><td>${i.score ? i.score + "/10" : "—"}</td>
+        <td>${i.result === "通过" ? '<span class="chip ok">通过</span>' : i.result === "未通过" ? '<span class="chip bad">未通过</span>' : '<span class="chip warn">待进行</span>'}</td>
+        <td><button class="btn sm" data-act="interview-score" data-id="${i.id}">打分</button> <button class="iconlink" data-act="interview-del" data-id="${i.id}">🗑</button></td>
+      </tr>`).join("") : `<tr><td colspan="7"><div class="empty">还没有面试记录</div></td></tr>`}
+      </tbody></table></div>`;
+  }
+};
+
+/* ============ 视图 B：AI 助手 / 人脉 / 学习 / 日记 / 规划 / Offer / 分析 / 资料库 ============ */
+
+/* ---------- P6 AI 求职助手（本地规则，不联网） ---------- */
+const AI_FEATURES = [
+  ["JD 分析", "把岗位 JD 贴进来，按五维口径拆出匹配点与缺口", "分析一下我手上匹配度最高的岗位"],
+  ["简历优化", "对着目标岗位挑出该突出的经历与数字", "帮我看看简历该突出什么"],
+  ["模拟面试", "按简历与岗位生成面试问题，给出回答要点", "给我 3 个研发助理面试问题"],
+  ["面试复盘", "把面试记录换成下一场的改进项", "复盘一下我最近的面试"],
+  ["Offer 对比", "多维度摊开比较，避免只看月薪", "帮我比一下手上的 Offer"],
+  ["薪资谈判", "按广东食品研发行情给话术", "薪资怎么谈"]
+];
+
+function aiReply(q) {
+  const t = q.toLowerCase();
+  const top = [...db.jobs].sort((a, b) => b.match - a.match)[0];
+  if (/jd|岗位|分析/.test(t)) {
+    if (!top) return "库里还没有岗位。先去「岗位管理」添加一条，我再按五维拆给你看。";
+    return `按你的画像，库里匹配度最高的是「${top.company} · ${top.title}」（${top.match}%）。\n\n拆解：\n· 相关性（30）：岗位要的是打样、配方与留样评测，你的小米糕梯度设计、曲奇饼干小试直接对得上。\n· 小试/中试（25）：40 余次小试 + 中试试产 + 作业指导书 2 份。\n· 仪器（20）：TMS-PRO、色差仪、水分仪、Aw、感官评价齐全。\n· 数据（15）：60 余张记录表、20 余批次汇总、Excel 透视表。\n· 加分（10）：CET-6 487、专业前 4%、实验室助理、HACCP 巡检。\n\n要补的：这份 JD 写「1 年以上经验优先」，应届属放宽侧，投递时用项目时长与产出对冲。`;
+  }
+  if (/简历/.test(t)) return `对着目标岗位，简历第一屏建议这样改：\n1. 求职意向写成「食品研发 / 研发助理（烘焙 · 预制菜）」，别写泛泛的「食品相关岗位」。\n2. 技能栏前置 JD 里的词：打样、配方梯度、留样观察、感官评价、质构。\n3. 项目经历每条按「配方变量 → 做几轮 → 量化结果」写，例如粳米粉:糯米粉 7:3/6:4/5:5、小试 40 余次、硬度较竞品低 23%。\n4. 删掉「熟悉办公软件」这类零信息量句子。`;
+  if (/面试|模拟/.test(t)) return `研发助理面试，先准备这 3 个：\n1. 「讲一次你独立完成的小试」——按变量、轮次、检测指标、结论四段说，落到 40 余次与 23% 这个数。\n2. 「产线出现口感波动怎么排查」——从原料批次、配比、关键工艺参数、检测数据四条线拆。\n3. 「你了解 GB 2760 吗」——说出你实际用过的类别与限量，别背目录。\n\n回答时多用「我做过 X，结果是 Y」，少用「我了解 / 我熟悉」。`;
+  if (/复盘/.test(t)) {
+    const done = db.interviews.filter((i) => i.score);
+    if (!done.length) return "还没有打分的面试记录。去「面试中心」给每场打分，我再按分数给改进项。";
+    return done.map((i) => `· ${i.company} ${i.round}：${i.score}/10（${i.result}）`).join("\n") + `\n\n共性改进：把「我参与了」换成「我设计了/我执行了」；每场面试准备一个 30 秒的产品级案例。`;
+  }
+  if (/offer|对比/.test(t)) {
+    if (db.offers.length < 2) return "现在只有 " + db.offers.length + " 个 Offer，至少两个才能摊开对比。新增后我会按薪资结构、发展空间、公司文化、薪酬满意度四项排。";
+    return "已在「Offer 管理」按四项拉平对比，重点看总包与截止日期，别只看月薪。";
+  }
+  if (/薪|谈/.test(t)) {
+    const ranges = db.jobs.map((j) => j.salary).filter((s) => /\d/.test(s)).slice(0, 3);
+    return `广东食品研发助理这一档，公开岗位大多在 ${ranges.join(" / ") || "4-8K"}。\n谈的时候：\n1. 先报区间不报单点：「期望 9-11K，主要看岗位匹配度」。\n2. 用可验证的产出支撑：小试 40 余次、试产异常对照 6 项、作业指导书 2 份。\n3. 问清转正与调薪节奏，应届第一份更该看成长与产线接触面。`;
+  }
+  return "我可以帮你做：JD 分析、简历优化、模拟面试、面试复盘、Offer 对比、薪资谈判。点下面的快捷问题，或直接说你的情况。\n（说明：这是本地规则回复，没有连接大模型，也不会把你的数据发出去。）";
+}
+
+VIEWS.assistant = {
+  render() {
+    return pageHead("AI 求职助手", "六件事：拆 JD、改简历、模拟面试、复盘、比 Offer、谈薪资。",
+      `<button class="btn primary" data-act="ai-focus">打开对话面板</button>`)
+      + `<div class="grid g3">${AI_FEATURES.map((f) => `<button class="feature" data-act="ai-ask" data-q="${esc(f[2])}"><b>${esc(f[0])}</b><span>${esc(f[1])}</span></button>`).join("")}</div>
+      <div class="card" style="margin-top:16px">
+        <h3>对话<span class="tag">本地规则引擎 · 不联网</span></h3>
+        <div class="chat" id="chat">${state.chat.length ? state.chat.map((m) => `<div class="msg ${m.role}">${esc(m.text)}</div>`).join("") : `<div class="msg ai">你好，我是职途的本地助手。点下面的问题试试，我不会把你的简历发到任何服务器。</div>`}</div>
+        <div class="quick">${AI_FEATURES.map((f) => `<button class="btn sm" data-act="ai-ask" data-q="${esc(f[2])}">${esc(f[0])}</button>`).join("")}</div>
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <input id="aiInput" placeholder="直接说你的情况，例如：帮我改一下自我介绍" style="flex:1;border:1px solid var(--line);border-radius:8px;padding:9px 12px;outline:none">
+          <button class="btn primary" data-act="ai-send">发送</button>
+        </div>
+      </div>`;
+  }
+};
+
+/* ---------- P7 人脉与内推 ---------- */
+VIEWS.contacts = {
+  render() {
+    const c = db.contacts;
+    const funnel = [
+      ["内推请求", c.length], ["已回应", c.filter((x) => x.status !== "待回复" && x.status !== "待处理").length],
+      ["简历投递", c.filter((x) => ["沟通中", "已同步", "已回复"].includes(x.status)).length],
+      ["面试", c.filter((x) => x.status === "沟通中").length], ["Offer", 0]
+    ];
+    const max = Math.max(1, ...funnel.map((f) => f[1]));
+    return pageHead("人脉与内推", "谁答应帮你推、推到哪一步，记下来才不会烂在聊天记录里。",
+      `<button class="btn primary" data-act="contact-add">+ 添加联系人</button>`)
+      + `<div class="grid g2" style="margin-bottom:14px">
+        <div class="card"><h3>内推转化漏斗</h3>${hbars(funnel.map((f) => ({ label: f[0], value: f[1], max, text: f[1] + " 人" })))}</div>
+        <div class="card"><h3>跟进提醒</h3>
+          ${c.length ? c.map((x) => `<div class="tl-item" style="padding-bottom:12px"><div class="row-between"><b>${esc(x.name)} · ${esc(x.company)}</b><span class="chip ${x.status === "已拒绝" ? "bad" : x.status === "沟通中" ? "warn" : "ghost"}">${esc(x.status)}</span></div><div class="muted">${esc(x.followup)}</div></div>`).join("") : `<div class="empty">还没有联系人</div>`}
+        </div>
+      </div>
+      <div class="table-wrap"><table><thead><tr><th>联系人</th><th>公司</th><th>岗位</th><th>请求日期</th><th>状态</th><th>跟进</th><th></th></tr></thead><tbody>
+      ${c.length ? c.map((x) => `<tr>
+        <td class="t-title">${esc(x.name)}</td><td>${esc(x.company)}</td><td>${esc(x.role)}</td>
+        <td class="muted">${esc(x.date)}</td><td><span class="chip">${esc(x.status)}</span></td>
+        <td class="muted">${esc(x.followup)}</td>
+        <td><button class="iconlink" data-act="contact-del" data-id="${x.id}">🗑</button></td>
+      </tr>`).join("") : `<tr><td colspan="7"><div class="empty">还没有内推联系人</div></td></tr>`}
+      </tbody></table></div>`;
+  }
+};
+
+/* ---------- P8 学习提升 ---------- */
+VIEWS.learning = {
+  render() {
+    const all = db.plans.flatMap((p) => p.tasks);
+    const done = all.filter((t) => t.done).length;
+    const pct = all.length ? Math.round((done / all.length) * 100) : 0;
+    const todayTasks = all.filter((t) => !t.done).sort((a, b) => (a.date > b.date ? 1 : -1)).slice(0, 3);
+    return pageHead("学习提升", "缺口不是感觉出来的，是从 JD 与面试里拆出来的。",
+      `<button class="btn" data-act="plan-ai">AI 生成计划</button><button class="btn primary" data-act="plan-add">+ 新建计划</button>`)
+      + `<div class="grid g4">
+        <div class="kpi"><div class="t">进行中计划</div><div class="v">${db.plans.length}<small>个</small></div></div>
+        <div class="kpi"><div class="t">总任务</div><div class="v">${all.length}<small>项</small></div></div>
+        <div class="kpi"><div class="t">已完成</div><div class="v">${done}<small>项</small></div></div>
+        <div class="kpi"><div class="t">完成率</div><div class="v">${pct}<small>%</small></div></div>
+      </div>
+      <div class="grid g2" style="margin-top:14px">
+        <div class="card"><h3>今日学习任务</h3>
+          ${todayTasks.length ? todayTasks.map((t) => `<div class="tl-item" style="padding-bottom:10px"><div class="row-between"><b>${esc(t.title)}</b><span class="muted">${esc(t.date)}</span></div></div>`).join("") : `<div class="empty">今天没有待办任务</div>`}
+        </div>
+        <div class="card" style="text-align:center"><h3 style="text-align:left">整体进度</h3>${ring(pct, 150, "已完成 " + done + "/" + all.length)}</div>
+      </div>
+      <h2 style="font-size:15px;margin:22px 0 10px">学习计划</h2>
+      ${db.plans.map((p) => `<div class="card" style="margin-bottom:12px">
+        <div class="row-between"><b>${esc(p.name)}</b><span class="chip ${p.priority === "高" ? "warn" : "ghost"}">优先级 ${esc(p.priority)}</span></div>
+        <div class="muted" style="margin-top:4px">目标岗位：${esc(p.target)} · 截止 ${esc(p.deadline)} · 已完成 ${p.tasks.filter((t) => t.done).length}/${p.tasks.length}</div>
+        <div class="tl" style="margin-top:12px">
+          ${p.tasks.map((t, i) => `<div class="tl-item ${t.done ? "done" : ""}">
+            <div class="row-between"><span style="${t.done ? "text-decoration:line-through;color:var(--faint)" : ""}">${esc(t.title)}</span>
+              <span><span class="muted">${esc(t.date)}</span> <button class="btn sm" data-act="plan-task" data-id="${p.id}" data-idx="${i}">${t.done ? "撤销" : "完成"}</button></span></div>
+          </div>`).join("")}
+        </div>
+        <div style="text-align:right"><button class="btn sm danger" data-act="plan-del" data-id="${p.id}">删除计划</button></div>
+      </div>`).join("") || `<div class="empty">还没有学习计划</div>`}`;
+  }
+};
+
+/* ---------- P9 心态日记 ---------- */
+VIEWS.diary = {
+  render() {
+    const d = [...db.diaries].sort((a, b) => (a.date > b.date ? 1 : -1));
+    const avgMood = d.length ? (d.reduce((s, x) => s + Number(x.mood), 0) / d.length).toFixed(1) : "—";
+    const avgEnergy = d.length ? (d.reduce((s, x) => s + Number(x.energy), 0) / d.length).toFixed(1) : "—";
+    const low = d.filter((x) => Number(x.mood) <= 2).length;
+    const dist = [1, 2, 3, 4, 5].map((k) => ({ name: k + " 分", value: d.filter((x) => Number(x.mood) === k).length }));
+    const colors = ["#f7b6bd", "#f9d9a0", "#cfe3c7", "#9ecbe8", "#1f5fbf"];
+    const items = dist.map((x, i) => ({ ...x, color: colors[i] })).filter((x) => x.value);
+    return pageHead("心态日记", "找工作是一场耐力赛，情绪也需要记录和复盘。",
+      `<button class="btn" data-act="export-md">导出</button><button class="btn primary" data-act="diary-add">+ 写日记</button>`)
+      + `<div class="grid g4">
+        <div class="kpi"><div class="t">日记记录</div><div class="v">${d.length}<small>篇</small></div></div>
+        <div class="kpi"><div class="t">平均心情</div><div class="v">${avgMood}<small>/5</small></div></div>
+        <div class="kpi"><div class="t">平均能量</div><div class="v">${avgEnergy}<small>/5</small></div></div>
+        <div class="kpi"><div class="t">低落天数</div><div class="v">${low}<small>天</small></div></div>
+      </div>
+      <div class="grid g2" style="margin-top:14px">
+        <div class="card"><h3>心情曲线</h3>
+          ${d.length ? lineChart(d.map((x) => x.date.slice(5)), [{ color: "#1f5fbf", data: d.map((x) => Number(x.mood)) }, { color: "#f5a524", data: d.map((x) => Number(x.energy)) }]) : `<div class="empty">还没有记录</div>`}
+          <div class="legend"><span><i style="background:#1f5fbf"></i>心情</span><span><i style="background:#f5a524"></i>能量</span></div>
+        </div>
+        <div class="card"><h3>心情分布</h3>
+          <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+            ${items.length ? donut(items) : `<div class="empty">还没有记录</div>`}
+            <div style="font-size:12.5px;line-height:2">${items.map((x) => `<div><i style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${x.color};margin-right:6px"></i>${esc(x.name)}：${x.value} 天</div>`).join("") || '<span class="muted">暂无</span>'}</div>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <h3>本周洞察<span class="tag">基于你记录的几条</span></h3>
+        <div class="note info">最近 ${d.length} 条记录的平均心情 ${avgMood}/5，能量 ${avgEnergy}/5。${low ? "有 " + low + " 天心情偏低，注意睡眠与节奏。" : "整体较稳，保持现在的投递节奏。"}</div>
+        <div style="margin-top:10px;font-size:13px;line-height:2">
+          · 保证 7 小时睡眠，面试前一天不熬夜改简历<br>
+          · 每天固定 30 分钟刷岗位，其余时间不看招聘软件<br>
+          · 每周至少跟一个人聊聊进展（学长、同学、老师都行）<br>
+          · 运动 3 次以上，把焦虑转成体力消耗
+        </div>
+        <button class="btn primary sm" style="margin-top:10px" data-act="diary-add">记录今天的情绪</button>
+      </div>
+      <h2 style="font-size:15px;margin:22px 0 10px">日记列表</h2>
+      ${d.length ? [...d].reverse().map((x) => `<div class="card" style="margin-bottom:10px">
+        <div class="row-between"><b>${esc(x.date)}</b><span><span class="chip">心情 ${x.mood}/5</span><span class="chip">能量 ${x.energy}/5</span></span></div>
+        <p style="margin:8px 0 6px;line-height:1.75">${esc(x.text)}</p>
+        <div class="row-between"><span>${(x.tags || []).map((t) => `<span class="chip ghost">${esc(t)}</span>`).join("")}</span><button class="iconlink" data-act="diary-del" data-id="${x.id}">🗑</button></div>
+      </div>`).join("") : `<div class="empty">还没有日记</div>`}`;
+  }
+};
+
+/* ---------- P10 时间规划 ---------- */
+VIEWS.plan = {
+  render() {
+    const nodes = [...db.nodes].sort((a, b) => (a.date > b.date ? 1 : -1));
+    const upcoming = nodes.filter((n) => dayDiff(n.date) >= 0).slice(0, 5);
+    const goalPct = Math.round((db.goals.invested / db.goals.monthly) * 100);
+    return pageHead("时间规划", "把「这周投几家、哪天面试」变成看得见的进度。",
+      `<button class="btn" data-act="node-add">+ 添加节点</button><button class="btn" data-act="export-md">导出</button>`)
+      + `<div class="grid g2">
+        <div class="card"><h3>本月投递计划<span class="tag">2026 年 11 月</span></h3>
+          ${hbars([
+            { label: "目标投递", value: 100, max: 100, text: db.goals.monthly + " 家" },
+            { label: "已投递", value: goalPct, max: 100, text: db.goals.invested + " 家" },
+            { label: "完成率", value: goalPct, max: 100, text: goalPct + "%", color: "#0e7a4f" }
+          ])}
+          <div class="note info" style="margin-top:12px">按公开岗位节奏，11 月下旬到 12 月初是校招补录窗口，投递密度可以再提一档。</div>
+        </div>
+        <div class="card"><h3>倒计时</h3>
+          ${upcoming.map((n) => `<div class="row-between" style="padding:9px 0;border-bottom:1px solid var(--line-2)">
+            <div><b>${esc(n.title)}</b><div class="muted">${esc(n.date)}</div></div>
+            <span class="chip ${dayDiff(n.date) <= 2 ? "warn" : "ghost"}">${dayDiff(n.date) === 0 ? "今天" : dayDiff(n.date) + " 天"}</span>
+          </div>`).join("") || `<div class="empty">近期的节点都完成了</div>`}
+        </div>
+      </div>
+      <div class="card" style="margin-top:14px"><h3>关键节点</h3>
+        <div class="tl">${nodes.map((n) => `<div class="tl-item ${dayDiff(n.date) < 0 ? "done" : ""}">
+          <div class="row-between"><div><b>${esc(n.title)}</b><div class="muted">${esc(n.date)} · ${esc(n.tag)}</div></div>
+          <button class="iconlink" data-act="node-del" data-id="${n.id}">🗑</button></div>
+        </div>`).join("")}</div>
+      </div>`;
+  }
+};
+
+/* ---------- P11 Offer 管理 ---------- */
+VIEWS.offers = {
+  render() {
+    const o = db.offers;
+    const maxTotal = Math.max(1, ...o.map((x) => Number(x.total) || 0));
+    return pageHead("Offer 管理", "两个以上才叫选择，一个只是结果。",
+      `<button class="btn primary" data-act="offer-add">+ 新增 Offer</button>`)
+      + (o.length ? `
+        <div class="grid g2">${o.map((x) => `<div class="card">
+          <div class="row-between"><b>${esc(x.company)}</b><span class="chip ${x.deadline && dayDiff(x.deadline) <= 3 ? "warn" : "ok"}">截止 ${esc(x.deadline || "未填")}</span></div>
+          <div class="muted" style="margin-top:2px">${esc(x.title)} · ${esc(x.city)}</div>
+          <div style="display:flex;gap:18px;margin:12px 0;flex-wrap:wrap">
+            <div><div class="muted">月薪</div><b>${esc(x.monthly)}K</b></div>
+            <div><div class="muted">发薪</div><b>${esc(x.months)} 月</b></div>
+            <div><div class="muted">总包</div><b>${esc(x.total)} 万</b></div>
+            <div><div class="muted">综合分</div><b>${esc(x.score)}/100</b></div>
+          </div>
+          <div>${(x.benefits || []).map((b) => `<span class="chip">${esc(b)}</span>`).join("")}</div>
+          <div style="margin-top:10px">${hbars([
+            { label: "发展空间", value: Number(x.space) * 10, max: 100, text: x.space + "/10" },
+            { label: "公司文化", value: Number(x.culture) * 10, max: 100, text: x.culture + "/10" },
+            { label: "薪酬满意", value: Number(x.pay) * 10, max: 100, text: x.pay + "/10" }
+          ])}</div>
+          <div style="text-align:right"><button class="btn sm danger" data-act="offer-del" data-id="${x.id}" style="margin-top:8px">删除</button></div>
+        </div>`).join("")}</div>
+        <div class="card" style="margin-top:14px"><h3>多维对比</h3>
+          <div class="table-wrap" style="border:0"><table><thead><tr><th>维度</th>${o.map((x) => `<th>${esc(x.company)}</th>`).join("")}</tr></thead><tbody>
+          ${[["薪资结构（万/年）", "total"], ["月薪（K）", "monthly"], ["发薪月数", "months"], ["发展空间", "space"], ["公司文化", "culture"], ["薪酬满意度", "pay"], ["综合评分", "score"]].map(([label, key]) => `<tr><td class="muted">${label}</td>${o.map((x) => `<td>${esc(x[key])}${["space", "culture", "pay"].includes(key) ? "/10" : ""}</td>`).join("")}</tr>`).join("")}
+          </tbody></table></div>
+        </div>` : `<div class="empty" style="padding:48px 16px">
+          <div style="font-size:15px;color:var(--ink);margin-bottom:6px">还没有 Offer 记录</div>
+          <div style="margin-bottom:14px">拿到口头 offer 就先记下来，把薪资结构、截止日期和三项评分填全，后面比较才不靠印象。</div>
+          <button class="btn primary" data-act="offer-add">+ 新增 Offer</button>
+        </div>`);
+  }
+};
+
+/* ---------- P12 求职能力分析 ---------- */
+VIEWS.analysis = {
+  render() {
+    const skills = [
+      ["小试 / 中试", 88], ["配方梯度设计", 84], ["质构与色差检测", 86], ["感官评价", 78],
+      ["数据与记录", 82], ["法规基础", 74], ["HACCP / 品控", 76]
+    ];
+    const weeks = ["W44", "W45", "W46", "W47", "W48"];
+    const appliedSeries = [0, 1, 2, 0, 0];
+    const replySeries = [0, 0, 1, 1, 0];
+    const short = [
+      ["岗位适配", 64, "广东食品研发岗位多要求 1-3 年经验，应届需用项目密度对冲"],
+      ["技术深度", 70, "配方会做但缺「为什么这样配」的机理表达，补文献与标准"],
+      ["项目量化", 70, "已能量化小试次数与硬度差，继续补成本、保质期、不良率"]
+    ];
+    return pageHead("求职能力分析", "按岗位要求反推自己缺什么，而不是凭感觉补。",
+      `<button class="btn primary" data-act="export-md">导出报告</button>`)
+      + `<div class="grid g2">
+        <div class="card"><h3>能力雷达</h3>${radarChart(["技术能力", "项目能力", "沟通能力", "行业知识", "执行能力", "简历质量"], [78, 86, 68, 74, 88, 82], [72, 74, 70, 70, 74, 72])}
+          <div class="legend"><span><i style="background:#1f5fbf"></i>自己</span><span><i style="background:#c9d3e3"></i>同届均值（估计）</span></div></div>
+        <div class="card"><h3>技能掌握度<span class="tag">自评，可按实际改</span></h3>${hbars(skills.map(([n, v]) => ({ label: n, value: v, max: 100, text: v })))}</div>
+      </div>
+      <div class="grid g2" style="margin-top:14px">
+        <div class="card"><h3>近 5 周投递趋势</h3>${lineChart(weeks, [{ color: "#1f5fbf", data: appliedSeries }, { color: "#0e7a4f", data: replySeries }])}
+          <div class="legend"><span><i style="background:#1f5fbf"></i>投递数</span><span><i style="background:#0e7a4f"></i>回复数</span></div>
+          <div class="note info" style="margin-top:10px">按投递记录的日期统计；本周数据会随新增记录自动变。</div>
+        </div>
+        <div class="card"><h3>能力短板</h3>
+          ${short.map(([n, v, tip]) => `<div style="margin-bottom:14px">
+            <div class="row-between"><b>${esc(n)}</b><span class="muted">${v}/100</span></div>
+            <div class="bar" style="margin:6px 0"><i style="width:${v}%;background:var(--warn)"></i></div>
+            <div class="muted">建议：${esc(tip)}</div>
+          </div>`).join("")}
+        </div>
+      </div>`;
+  }
+};
+
+/* ---------- P13 资料库 ---------- */
+VIEWS.library = {
+  render() {
+    const types = ["全部", "面经", "笔试题", "公司分析", "行业报告", "自我介绍"];
+    const list = db.materials.filter((m) => state.matType === "全部" || m.type === state.matType);
+    return pageHead("资料库", "面经、笔试题、公司分析放一处，面试前十分钟能翻完。",
+      `<button class="btn" data-act="export-md">导出</button><button class="btn primary" data-act="material-add">+ 新增资料</button>`)
+      + `<div class="tabs">${types.map((t) => `<button class="tab ${state.matType === t ? "on" : ""}" data-act="mat-type" data-t="${t}">${t}</button>`).join("")}</div>`
+      + `<div class="grid g2">${list.map((m) => `<div class="card">
+        <div class="row-between"><span class="chip brand">${esc(m.type)}</span><span class="muted">${esc(m.date)}</span></div>
+        <b style="display:block;margin:8px 0 4px">${esc(m.title)}</b>
+        <p class="muted" style="margin:0 0 8px;line-height:1.7">${esc(m.summary)}</p>
+        <div class="row-between"><span>${(m.tags || []).map((t) => `<span class="chip ghost">${esc(t)}</span>`).join("")}</span><span class="muted">${esc(m.source)}</span></div>
+        <div style="text-align:right"><button class="iconlink" data-act="material-del" data-id="${m.id}">🗑</button></div>
+      </div>`).join("") || `<div class="empty">这个分类下还没有资料</div>`}</div>`;
+  }
+};
+
+/* ============ 事件 / 弹窗表单 / 导出 / 启动 ============ */
+Object.assign(state, { jobStage: "全部阶段", jobType: "全部类型", jobSort: "最近更新", matType: "全部" });
+
+/* ---------- 下载工具 ---------- */
+function download(name, text, mime) {
+  const blob = new Blob([text], { type: mime || "text/plain;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 400);
+}
+function exportMD() {
+  const lines = ["# 罗涛 · 求职工作台导出（" + TODAY.toISOString().slice(0, 10) + "）", "", "## 岗位清单", "", "| 岗位 | 公司 | 城市 | 薪资 | 匹配度 | 阶段 | 来源 |", "|---|---|---|---|---|---|---|"];
+  db.jobs.forEach((j) => lines.push(`| ${j.title} | ${j.company} | ${j.city} | ${j.salary} | ${j.match}% | ${j.stage} | ${j.url} |`));
+  lines.push("", "## 投递记录", "");
+  db.applications.forEach((a) => lines.push(`- ${a.company} · ${a.title}｜${a.date}｜当前：${a.steps[a.current]}${a.note ? "｜备注：" + a.note : ""}`));
+  lines.push("", "## 面试", "");
+  db.interviews.forEach((i) => lines.push(`- ${i.company} · ${i.round}｜${i.date} ${i.time}｜${i.result}${i.score ? "｜" + i.score + "/10" : ""}`));
+  lines.push("", "## 学习计划", "");
+  db.plans.forEach((p) => { lines.push(`### ${p.name}（截止 ${p.deadline}）`); p.tasks.forEach((t) => lines.push(`- [${t.done ? "x" : " "}] ${t.title}（${t.date}）`)); });
+  const stamp = new Date().toISOString().slice(0, 10);
+  download(`职途-导出-${stamp}.md`, lines.join("\n"), "text/markdown;charset=utf-8");
+  toast("已导出 Markdown");
+}
+
+/* ---------- 各实体的表单 ---------- */
+const F = {
+  job(j) {
+    openModal({
+      title: j ? "编辑岗位" : "添加岗位",
+      fields: [
+        { k: "company", label: "公司", value: j?.company }, { k: "title", label: "岗位", value: j?.title },
+        { k: "city", label: "城市", value: j?.city }, { k: "salary", label: "薪资", value: j?.salary, ph: "如 6K-12K / 未公开" },
+        { k: "type", label: "类型", type: "select", options: ["全职", "实习"], value: j?.type },
+        { k: "match", label: "匹配度（0-100）", type: "number", value: j?.match ?? 80 },
+        { k: "stage", label: "阶段", type: "select", options: ["待投递", "已投递", "面试中", "已面试", "已 offer", "已拒绝"], value: j?.stage },
+        { k: "deadline", label: "截止", value: j?.deadline, ph: "如 12 天" },
+        { k: "url", label: "原始链接", value: j?.url, ph: "https://" },
+        { k: "note", label: "风险 / 备注", type: "textarea", rows: 2, value: j?.note }
+      ],
+      onSubmit(v) {
+        if (!v.company || !v.title) return toast("公司和岗位不能为空");
+        const rec = { ...v, match: Number(v.match) || 0, favorite: j ? j.favorite : false, id: j ? j.id : uid("j") };
+        if (j) Object.assign(j, rec); else db.jobs.unshift(rec);
+        save(); closeModal(); render(); toast(j ? "已更新" : "已添加岗位");
+      }
+    });
+  },
+  resume() {
+    openModal({
+      title: "新建简历版本",
+      fields: [
+        { k: "name", label: "版本名", ph: "如 v3.3 烘焙方向加强版" },
+        { k: "focus", label: "主打卖点", ph: "如 打样 + 留样评测 + 质构对标" },
+        { k: "match", label: "匹配度", type: "number", value: 80 },
+        { k: "status", label: "状态", type: "select", options: ["使用中", "待优化", "待完善"] }
+      ],
+      onSubmit(v) {
+        if (!v.name) return toast("版本名不能为空");
+        db.resumes.unshift({ id: uid("r"), name: v.name, tags: ["全职", "研发助理"], match: Number(v.match) || 0, status: v.status, updated: new Date().toISOString().slice(0, 10), focus: v.focus || "" });
+        save(); closeModal(); render(); toast("已新建版本");
+      }
+    });
+  },
+  project() {
+    openModal({
+      title: "新增项目经历",
+      fields: [
+        { k: "title", label: "项目名称" }, { k: "date", label: "时间", ph: "2026-11" },
+        { k: "tags", label: "标签（逗号分隔）", ph: "小试、质构、感官评价" },
+        { k: "desc", label: "描述（写清变量与量化结果）", type: "textarea", rows: 4 }
+      ],
+      onSubmit(v) {
+        if (!v.title) return toast("项目名不能为空");
+        db.projects.unshift({ id: uid("p"), title: v.title, date: v.date || "", tags: (v.tags || "").split(/[,，]/).map((s) => s.trim()).filter(Boolean), desc: v.desc || "" });
+        save(); closeModal(); render(); toast("已新增项目");
+      }
+    });
+  },
+  apply(a) {
+    openModal({
+      title: a ? "编辑投递记录" : "记录一次投递",
+      fields: [
+        { k: "company", label: "公司", value: a?.company }, { k: "title", label: "岗位", value: a?.title },
+        { k: "city", label: "地点", value: a?.city },
+        { k: "date", label: "投递日期", value: a?.date ?? TODAY.toISOString().slice(0, 10) },
+        { k: "steps", label: "阶段链（逗号分隔）", value: (a?.steps || ["投递简历", "简历筛选", "一面", "二面"]).join("，") },
+        { k: "current", label: "当前阶段序号（从 0 开始）", type: "number", value: a?.current ?? 0 },
+        { k: "status", label: "状态", type: "select", options: ["已投递", "面试中", "已结束"], value: a?.status },
+        { k: "note", label: "备注", type: "textarea", rows: 2, value: a?.note }
+      ],
+      onSubmit(v) {
+        if (!v.company) return toast("公司不能为空");
+        const steps = (v.steps || "").split(/[,，]/).map((s) => s.trim()).filter(Boolean);
+        const rec = { company: v.company, title: v.title || "", city: v.city || "", date: v.date, steps, current: Math.max(0, Math.min(steps.length - 1, Number(v.current) || 0)), status: v.status, note: v.note || "", id: a ? a.id : uid("a") };
+        if (a) Object.assign(a, rec); else { db.applications.unshift(rec); db.goals.invested = Math.min(db.goals.monthly, db.goals.invested + 1); }
+        save(); closeModal(); render(); toast("已保存投递记录");
+      }
+    });
+  },
+  interview(i) {
+    openModal({
+      title: i ? "面试打分" : "记录面试",
+      fields: [
+        { k: "company", label: "公司", value: i?.company }, { k: "title", label: "岗位", value: i?.title },
+        { k: "round", label: "轮次", value: i?.round, ph: "技术面 / HR 面 / 初面" },
+        { k: "date", label: "日期", value: i?.date ?? "2026-11-25" },
+        { k: "time", label: "时间", value: i?.time, ph: "14:00–15:00" },
+        { k: "place", label: "地点", value: i?.place, ph: "线上 / 公司地址" },
+        { k: "score", label: "评分（0-10，未面填 0）", type: "number", value: i?.score ?? 0 },
+        { k: "result", label: "结果", type: "select", options: ["待进行", "通过", "未通过"], value: i?.result }
+      ],
+      onSubmit(v) {
+        if (!v.company) return toast("公司不能为空");
+        const rec = { ...v, score: Number(v.score) || 0, id: i ? i.id : uid("i") };
+        if (i) Object.assign(i, rec); else db.interviews.unshift(rec);
+        save(); closeModal(); render(); toast("已保存");
+      }
+    });
+  },
+  contact() {
+    openModal({
+      title: "添加内推联系人",
+      fields: [
+        { k: "name", label: "联系人" }, { k: "company", label: "公司" }, { k: "role", label: "岗位 / 身份" },
+        { k: "date", label: "请求日期", value: TODAY.toISOString().slice(0, 10) },
+        { k: "status", label: "状态", type: "select", options: ["待处理", "待回复", "已回复", "沟通中", "已同步", "已拒绝"] },
+        { k: "followup", label: "跟进情况", type: "textarea", rows: 2 }
+      ],
+      onSubmit(v) {
+        if (!v.name) return toast("联系人不能为空");
+        db.contacts.unshift({ ...v, id: uid("c") });
+        save(); closeModal(); render(); toast("已添加");
+      }
+    });
+  },
+  plan() {
+    openModal({
+      title: "新建学习计划",
+      fields: [
+        { k: "name", label: "计划名称", ph: "如 食品添加剂法规补强" },
+        { k: "target", label: "目标岗位", ph: "食品研发 / 品控" },
+        { k: "weeks", label: "周期（周）", type: "number", value: 2 },
+        { k: "priority", label: "优先级", type: "select", options: ["高", "中", "低"] },
+        { k: "deadline", label: "截止日期", value: "2026-12-05" },
+        { k: "tasks", label: "任务（一行一条，格式：标题|日期）", type: "textarea", rows: 4, ph: "GB 2760 使用范围梳理|2026-11-28\n标签合规自查|2026-12-02" }
+      ],
+      onSubmit(v) {
+        if (!v.name) return toast("计划名不能为空");
+        const tasks = (v.tasks || "").split("\n").map((l) => l.trim()).filter(Boolean).map((l) => {
+          const [t, d] = l.split("|");
+          return { title: (t || "").trim(), date: (d || "").trim(), done: false };
+        }).filter((t) => t.title);
+        db.plans.unshift({ id: uid("l"), name: v.name, target: v.target || "", weeks: Number(v.weeks) || 1, priority: v.priority, deadline: v.deadline, tasks });
+        save(); closeModal(); render(); toast("已新建计划");
+      }
+    });
+  },
+  diary() {
+    openModal({
+      title: "写今天的日记",
+      fields: [
+        { k: "date", label: "日期", value: TODAY.toISOString().slice(0, 10) },
+        { k: "mood", label: "心情（1-5）", type: "number", value: 4 },
+        { k: "energy", label: "能量（1-5）", type: "number", value: 3 },
+        { k: "tags", label: "标签（逗号分隔）", ph: "面试、复盘", value: "" },
+        { k: "text", label: "今天发生了什么", type: "textarea", rows: 4 }
+      ],
+      onSubmit(v) {
+        if (!v.text) return toast("写点什么吧");
+        db.diaries.push({ id: uid("d"), date: v.date, mood: Number(v.mood) || 3, energy: Number(v.energy) || 3, text: v.text, tags: (v.tags || "").split(/[,，]/).map((s) => s.trim()).filter(Boolean) });
+        save(); closeModal(); render(); toast("已记录");
+      }
+    });
+  },
+  node() {
+    openModal({
+      title: "添加关键节点",
+      fields: [
+        { k: "title", label: "节点名称" }, { k: "date", label: "日期", value: "2026-12-01" },
+        { k: "tag", label: "类型", type: "select", options: ["面试", "投递", "学习", "其他"] }
+      ],
+      onSubmit(v) {
+        if (!v.title) return toast("节点名不能为空");
+        db.nodes.push({ ...v, id: uid("n") });
+        save(); closeModal(); render(); toast("已添加节点");
+      }
+    });
+  },
+  offer() {
+    openModal({
+      title: "新增 Offer",
+      fields: [
+        { k: "company", label: "公司" }, { k: "title", label: "岗位" }, { k: "city", label: "城市" },
+        { k: "monthly", label: "月薪（K）", type: "number", value: 8 },
+        { k: "months", label: "发薪月数", type: "number", value: 13 },
+        { k: "total", label: "总包（万/年）", type: "number", value: 12 },
+        { k: "deadline", label: "确认截止", value: "2026-12-01" },
+        { k: "space", label: "发展空间（1-10）", type: "number", value: 7 },
+        { k: "culture", label: "公司文化（1-10）", type: "number", value: 7 },
+        { k: "pay", label: "薪酬满意度（1-10）", type: "number", value: 7 },
+        { k: "score", label: "综合评分（0-100）", type: "number", value: 70 },
+        { k: "benefits", label: "福利（逗号分隔）", ph: "五险一金、包吃住" }
+      ],
+      onSubmit(v) {
+        if (!v.company) return toast("公司不能为空");
+        db.offers.unshift({ ...v, benefits: (v.benefits || "").split(/[,，]/).map((s) => s.trim()).filter(Boolean), id: uid("o") });
+        save(); closeModal(); render(); toast("已新增 Offer");
+      }
+    });
+  },
+  material() {
+    openModal({
+      title: "新增资料",
+      fields: [
+        { k: "type", label: "类型", type: "select", options: ["面经", "笔试题", "公司分析", "行业报告", "自我介绍"] },
+        { k: "title", label: "标题" }, { k: "summary", label: "摘要", type: "textarea", rows: 3 },
+        { k: "source", label: "来源", ph: "公司官网 / 自整理" },
+        { k: "date", label: "日期", value: TODAY.toISOString().slice(0, 10) },
+        { k: "tags", label: "关键词（逗号分隔）" }
+      ],
+      onSubmit(v) {
+        if (!v.title) return toast("标题不能为空");
+        db.materials.unshift({ ...v, tags: (v.tags || "").split(/[,，]/).map((s) => s.trim()).filter(Boolean), id: uid("m") });
+        save(); closeModal(); render(); toast("已新增资料");
+      }
+    });
+  }
+};
+
+/* ---------- 全局事件 ---------- */
+document.addEventListener("click", (e) => {
+  const t = e.target.closest("[data-act]");
+  if (!t) return;
+  const act = t.dataset.act;
+  const id = t.dataset.id;
+  const find = (arr) => arr.find((x) => x.id === id);
+  switch (act) {
+    case "go": go(t.dataset.view); break;
+    case "menu": $(".sidebar").classList.toggle("open"); break;
+    case "modal-close": closeModal(); break;
+    case "modal-submit": submitModal(); break;
+    case "job-add": F.job(); break;
+    case "job-edit": F.job(find(db.jobs)); break;
+    case "job-del": db.jobs = db.jobs.filter((x) => x.id !== id); save(); render(); toast("已删除"); break;
+    case "job-fav": { const j = find(db.jobs); j.favorite = !j.favorite; save(); render(); break; }
+    case "job-view": {
+      const j = find(db.jobs);
+      openModal({
+        title: j.title,
+        fields: [], onSubmit() {},
+        onRender: null
+      });
+      $("#modal").innerHTML = `<h3>${esc(j.title)}</h3>
+        <div class="muted" style="margin-bottom:12px">${esc(j.company)} · ${esc(j.city)} · ${money(j.salary)} · ${esc(j.type)}</div>
+        <div class="form">
+          <div><label>匹配度</label><div class="bar"><i style="width:${j.match}%"></i></div><div class="muted" style="margin-top:4px">${j.match}%</div></div>
+          <div><label>当前阶段</label><div>${stageChip(j.stage)}</div></div>
+          <div><label>风险 / 备注</label><div class="muted">${esc(j.note || "—")}</div></div>
+          <div><label>原始链接</label><a href="${esc(j.url)}" target="_blank" rel="noopener">${esc(j.url)}</a></div>
+        </div>
+        <div class="foot"><button class="btn" data-act="modal-close">关闭</button></div>`;
+      $("#mask").classList.add("on");
+      break;
+    }
+    case "resume-add": F.resume(); break;
+    case "resume-del": db.resumes = db.resumes.filter((x) => x.id !== id); save(); render(); break;
+    case "project-add": F.project(); break;
+    case "project-del": db.projects = db.projects.filter((x) => x.id !== id); save(); render(); break;
+    case "apply-add": F.apply(); break;
+    case "apply-edit": F.apply(find(db.applications)); break;
+    case "apply-del": db.applications = db.applications.filter((x) => x.id !== id); save(); render(); break;
+    case "apply-advance": {
+      const a = find(db.applications);
+      a.current = Math.min(a.steps.length - 1, a.current + 1);
+      if (a.current >= 2) a.status = "面试中";
+      if (a.current === a.steps.length - 1) a.status = "已结束";
+      save(); render(); toast("已推进到「" + a.steps[a.current] + "」");
+      break;
+    }
+    case "apply-step": {
+      const a = find(db.applications);
+      a.current = Number(t.dataset.idx);
+      a.status = a.current >= a.steps.length - 1 ? "已结束" : a.current >= 2 ? "面试中" : "已投递";
+      save(); render();
+      break;
+    }
+    case "interview-add": F.interview(); break;
+    case "interview-score": F.interview(find(db.interviews)); break;
+    case "interview-del": db.interviews = db.interviews.filter((x) => x.id !== id); save(); render(); break;
+    case "contact-add": F.contact(); break;
+    case "contact-del": db.contacts = db.contacts.filter((x) => x.id !== id); save(); render(); break;
+    case "plan-add": F.plan(); break;
+    case "plan-del": db.plans = db.plans.filter((x) => x.id !== id); save(); render(); break;
+    case "plan-task": {
+      const p = find(db.plans); const i = Number(t.dataset.idx);
+      p.tasks[i].done = !p.tasks[i].done; save(); render(); break;
+    }
+    case "plan-ai": {
+      const gap = ["GB 2760 添加剂使用范围与限量", "TPA 质构参数与产品口感对应", "预制菜保质期与稳定性测试方法", "HACCP 关键控制点判定"];
+      openModal({
+        title: "AI 生成的学习计划（按岗位缺口）",
+        fields: [{ k: "name", label: "计划名称", value: "食品研发缺口补强" }, { k: "target", label: "目标岗位", value: "食品研发 / 研发助理" },
+          { k: "weeks", label: "周期（周）", type: "number", value: 3 }, { k: "priority", label: "优先级", type: "select", options: ["高", "中", "低"] },
+          { k: "deadline", label: "截止日期", value: "2026-12-12" },
+          { k: "tasks", label: "任务（一行一条，可改）", type: "textarea", rows: 5, value: gap.map((g) => g + "|2026-12-12").join("\n") }],
+        onSubmit(v) {
+          const tasks = (v.tasks || "").split("\n").filter(Boolean).map((l) => { const [a, b] = l.split("|"); return { title: (a || "").trim(), date: (b || "").trim(), done: false }; });
+          db.plans.unshift({ id: uid("l"), name: v.name, target: v.target, weeks: Number(v.weeks), priority: v.priority, deadline: v.deadline, tasks });
+          save(); closeModal(); render(); toast("已生成计划，可继续编辑");
+        }
+      });
+      break;
+    }
+    case "diary-add": F.diary(); break;
+    case "diary-del": db.diaries = db.diaries.filter((x) => x.id !== id); save(); render(); break;
+    case "node-add": F.node(); break;
+    case "node-del": db.nodes = db.nodes.filter((x) => x.id !== id); save(); render(); break;
+    case "offer-add": F.offer(); break;
+    case "offer-del": db.offers = db.offers.filter((x) => x.id !== id); save(); render(); break;
+    case "material-add": F.material(); break;
+    case "material-del": db.materials = db.materials.filter((x) => x.id !== id); save(); render(); break;
+    case "mat-type": state.matType = t.dataset.t; render(); break;
+    case "ai-ask": {
+      state.chat.push({ role: "me", text: t.dataset.q });
+      state.chat.push({ role: "ai", text: aiReply(t.dataset.q) });
+      state.view = "assistant"; render();
+      const c = $("#chat"); if (c) c.scrollTop = c.scrollHeight;
+      break;
+    }
+    case "ai-send": {
+      const inp = $("#aiInput"); if (!inp || !inp.value.trim()) return;
+      const q = inp.value.trim();
+      state.chat.push({ role: "me", text: q });
+      state.chat.push({ role: "ai", text: aiReply(q) });
+      render();
+      const c = $("#chat"); if (c) c.scrollTop = c.scrollHeight;
+      break;
+    }
+    case "ai-focus": { const i = $("#aiInput"); if (i) { i.focus(); i.scrollIntoView({ block: "center" }); } break; }
+    case "export-json": download("职途-数据备份.json", JSON.stringify(db, null, 2), "application/json"); toast("已导出 JSON 备份"); break;
+    case "export-md": exportMD(); break;
+    case "reset-data":
+      openModal({
+        title: "恢复初始数据",
+        fields: [], onSubmit() {},
+        onRender: null
+      });
+      $("#modal").innerHTML = `<h3>恢复初始数据</h3><p class="muted">会把本机存的所有改动清空，回到食品研发的初始示例数据。这一步不能撤销，建议先「导出数据」备份。</p>
+        <div class="foot"><button class="btn" data-act="modal-close">取消</button><button class="btn primary" data-act="reset-do">确认恢复</button></div>`;
+      $("#mask").classList.add("on");
+      break;
+    case "reset-do":
+      localStorage.removeItem(DB_KEY); db = clone(window.SEED); save(); closeModal(); go("dashboard"); toast("已恢复初始数据"); break;
+    case "notify": toast("2 条提醒：11-24 佳味天成初面、11-26 锦华技术面"); break;
+  }
+});
+
+document.addEventListener("input", (e) => {
+  if (e.target.id === "q") {
+    state.q = e.target.value;
+    render();
+    const el = $("#q");
+    if (el) { el.value = state.q; el.focus(); el.setSelectionRange(el.value.length, el.value.length); }
+  } else if (e.target.id === "globalSearch") {
+    state.q = e.target.value;
+  }
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && e.target.id === "globalSearch") { go("jobs"); }
+});
+document.addEventListener("change", (e) => {
+  const s = e.target.closest("[data-act='job-filter']");
+  if (s) { state[s.dataset.key] = s.value; render(); }
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeModal();
+  if (e.key === "Enter" && document.activeElement && document.activeElement.id === "aiInput") { const b = document.querySelector("[data-act='ai-send']"); if (b) b.click(); }
+});
+$("#mask").addEventListener("click", (e) => { if (e.target.id === "mask") closeModal(); });
+
+/* ---------- 启动 ---------- */
+function boot() {
+  $("#nav").innerHTML = NAV.map(([k, n, ic]) => `<a href="#/${k}" data-act="go" data-view="${k}" data-view-key="${k}"><span class="ic">${ic}</span>${esc(n)}${k === "apply" ? '<span class="dot" id="navDot"></span>' : ""}</a>`).join("");
+  const hash = (location.hash || "").replace("#/", "");
+  state.view = VIEWS[hash] ? hash : "dashboard";
+  render();
+  window.addEventListener("hashchange", () => {
+    const k = (location.hash || "").replace("#/", "");
+    if (VIEWS[k] && k !== state.view) { state.view = k; render(); window.scrollTo({ top: 0 }); }
+  });
+}
+boot();
+
+</script>
+</body>
+</html>
